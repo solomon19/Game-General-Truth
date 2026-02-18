@@ -343,11 +343,13 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* Close button inside YT Gate (Hidden by default) */
+        /* Close button inside YT Gate (Visible only for returning users/info mode) */
+        #ytCloseRow {
+            text-align: left; margin-bottom: 15px; display: none; /* Hidden by default */
+        }
         #ytCloseBtn {
-            background: transparent; border: none; color: var(--text-muted);
-            margin-top: 15px; width: 100%; padding: 10px; font-size: 0.9rem; cursor: pointer;
-            display: none; /* Initially hidden */
+            background: transparent; border: none; color: white;
+            font-size: 1.2rem; cursor: pointer; padding: 5px 10px;
         }
 
         /* --- Giveaway Alert --- */
@@ -494,6 +496,13 @@
     <!-- YouTube Gate Modal -->
     <div class="modal-overlay" id="ytGateOverlay" style="z-index: 9999;">
         <div class="sheet">
+            <!-- Back Arrow Row (Hidden by default) -->
+            <div id="ytCloseRow">
+                <button id="ytCloseBtn" onclick="closeYtModal()">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Game
+                </button>
+            </div>
+
             <div class="yt-modal">
                 <div class="yt-icon"><i class="fa-brands fa-youtube"></i></div>
                 <h2 style="color:white; margin-bottom: 10px;">Welcome to Trivia Lab!</h2>
@@ -536,9 +545,6 @@
                         I Subscribed
                     </button>
                 </div>
-
-                <!-- Close Button (Only visible for returning users) -->
-                <button id="ytCloseBtn" onclick="closeYtModal()">Close</button>
             </div>
         </div>
     </div>
@@ -701,15 +707,15 @@
             { id: 94, cat: "Nature", q: "አሳ ይተኛል?", a: "አዎ። አይኖቻቸውን መዝጋት ባይችሉም (ቆብ ስለሌላቸው)፣ አንጎላቸውን በማሳረፍ ይተኛሉ።" },
             { id: 95, cat: "Space", q: "በጣም ሞቃታማው ፕላኔት ማነው?", a: "ቬነስ። ምንም እንኳን ሜርኩሪ ለፀሀይ ቅርብ ብትሆንም፣ ቬነስ በከባቢ አየሯ ሙቀት ስለምታምቅ ትበልጣለች።" },
             { id: 96, cat: "Nature", q: "በዓለም ላይ ትልቁ እንስሳ?", a: "ብሉ ዌል (Blue Whale)። ምላሱ ብቻ የዝሆንን ያህል ይከብዳል።" },
-            { id: 97, cat: "Human", q: "በሰውነት ውስጥ ስንት ሊትር ደም አለ?", a: "ከ 4.5 እስከ 5.5 ሊትር።" },
-            { id: 98, cat: "Space", q: "ለመሬት ቅርብ የሆነው ኮከብ?", a: "ፀሐይ። ፀሐይም ኮከብ ናት።" },
-            { id: 99, cat: "World", q: "በዓለም ውዱ ቅመም?", a: "ሳፍሮን (Saffron)። 1 ኪሎ ለማምረት 150,000 አበባዎችን መለቀም ይጠይቃል።" },
-            { id: 100, cat: "Science", q: "እስከ 1 ቢሊዮን ለመቁጠር ስንት ጊዜ ይፈጃል?", a: "ያለ እረፍት ቢቆጠር 31 ዓመታት ከ251 ቀናት ይፈጃል።" },
-            { id: 101, cat: "Money", q: "በዓለም ላይ ቁጥር አንድ ሀብታም ሰው ማነው?", a: "ኢሎን ማስክ (Elon Musk)። የTesla እና SpaceX መስራች ሲሆን ሀብቱ ከ200 ቢሊዮን ዶላር በላይ ይገመታል።" },
-            { id: 102, cat: "Nature", q: "የዎምባት (Wombat) ኩስ (Poop) ምን አይነት ቅርጽ አለው?", a: "ኪዩብ (Cube)። ይህ ቅርጽ ኩሱ እንዳይሽከረከር እና ግዛቱን ለመለየት ይረዳዋል።" },
-            { id: 103, cat: "Science", q: "አንድ ደመና (Cloud) ምን ያህል ክብደት ይኖረዋል?", a: "አማካይ ደመና 500,000 ኪሎ ግራም ይመዝናል። ይህም የ100 ዝሆኖች ክብደት ያህል ነው።" },
-            { id: 104, cat: "Nature", q: "አቮካዶ ፍራፍሬ ነው ወይስ አትክልት?", a: "ፍራፍሬ (Fruit)። በሳይንስ አጠራር እንደ ትልቅ 'Berry' ይቆጠራል።" },
-            { id: 105, cat: "Science", q: "የሰው ልጅ DNA ከ ሙዝ ጋር ምን ያህል ይመሳሰላል?", a: "ወደ 50% ገደማ። ይህ የሚያሳየው ህይወት ያላቸው ነገሮች ሁሉ የጋራ መነሻ እንዳላቸው ነው።" }
+            { id: 97, cat: "Human", q: "በሰውነት ውስጥ ስንት ሊትር ደም አለ?", a: "5 ሊትር" },
+            { id: 98, cat: "Space", q: "ለመሬት ቅርብ የሆነው ኮከብ?", a: "ፀሐይ" },
+            { id: 99, cat: "World", q: "በዓለም ውዱ ቅመም?", a: "ሳፍሮን (Saffron)" },
+            { id: 100, cat: "Science", q: "እስከ 1 ቢሊዮን ለመቁጠር ስንት ጊዜ ይፈጃል?", a: "31 ዓመታት" },
+            { id: 101, cat: "Money", q: "በዓለም ላይ ቁጥር አንድ ሀብታም ሰው ማነው?", a: "ኢሎን ማስክ (Elon Musk)" },
+            { id: 102, cat: "Nature", q: "የዎምባት (Wombat) ኩስ (Poop) ምን አይነት ቅርጽ አለው?", a: "ኪዩብ (Cube) ቅርጽ" },
+            { id: 103, cat: "Science", q: "አንድ ደመና (Cloud) ምን ያህል ክብደት ይኖረዋል?", a: "500,000 ኪሎ ግራም (100 ዝሆኖች ያህል)" },
+            { id: 104, cat: "Nature", q: "አቮካዶ ፍራፍሬ ነው ወይስ አትክልት?", a: "ፍራፍሬ (Fruit)" },
+            { id: 105, cat: "Science", q: "የሰው ልጅ DNA ከ ሙዝ ጋር ምን ያህል ይመሳሰላል?", a: "50% ይመሳሰላል" }
         ];
 
         /* ================= STATE & LEVELING ================= */
@@ -971,11 +977,14 @@
         if (!appState.hasSubscribed) {
             // Show modal with a slight delay for effect
             setTimeout(() => ytOverlay.classList.add('active'), 500);
+        } else {
+            // If already subscribed, show the close button immediately when info is requested
+            document.getElementById('ytCloseRow').style.display = 'block';
+            document.getElementById('newSubscriberContent').style.display = 'none';
         }
 
         function handleSubClick() {
             // 1. Open YouTube
-            // (The link opens via the HTML <a> tag)
             
             // 2. Start "Verification" Timer
             const originalText = ytBtnContinue.innerText;
@@ -1012,17 +1021,19 @@
         }
 
         /* ================= SHOW INFO LOGIC ================= */
-        function showInfo() {
+        function reopenWelcomeModal() {
             const overlay = document.getElementById('ytGateOverlay');
-            const closeBtn = document.getElementById('ytCloseBtn');
-            const subBtn = document.getElementById('btnYtContinue');
+            const closeRow = document.getElementById('ytCloseRow');
+            const subContent = document.getElementById('newSubscriberContent');
             
-            // Show Close Button in Info Mode
-            closeBtn.style.display = 'block';
-            
-            // If viewing info, hide "I Subscribed" button to reduce clutter
             if (appState.hasSubscribed) {
-                subBtn.style.display = 'none';
+                // Returning user viewing info
+                closeRow.style.display = 'block';
+                subContent.style.display = 'none';
+            } else {
+                // New user
+                closeRow.style.display = 'none';
+                subContent.style.display = 'block';
             }
             
             overlay.classList.add('active');
