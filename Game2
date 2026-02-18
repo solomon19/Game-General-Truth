@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- SOCIAL SHARE PREVIEW -->
+    <meta property="og:title" content="Trivia Lab 🧠">
+    <meta property="og:description" content="100+ Fascinating Facts explained in depth. Learn something new today!">
+    <meta property="og:image" content="https://ui-avatars.com/api/?name=🧠&background=6366f1&color=fff&size=512&font-size=0.5">
+    <meta property="og:url" content="https://solomon19.github.io/trivia.html">
+    <meta property="og:type" content="website">
+
+    <title>Trivia Lab 🧠</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@300;400;700&family=Outfit:wght@400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* SEASONAL "AURORA" PALETTE */
+            --primary: #818cf8;    /* Indigo */
+            --secondary: #2dd4bf;  /* Teal */
+            --accent: #fbbf24;     /* Gold */
+            --bg-dark: #0f172a;    /* Midnight */
+            
+            --glass-surface: rgba(30, 41, 59, 0.7);
+            --glass-highlight: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        
+        body {
+            margin: 0;
+            font-family: 'Outfit', 'Noto Sans Ethiopic', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: env(safe-area-inset-bottom);
+            overflow-x: hidden;
+        }
+
+        /* --- Animated "Aurora" Background --- */
+        .ambient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(at 0% 0%, #312e81 0px, transparent 50%),
+                        radial-gradient(at 100% 0%, #0f766e 0px, transparent 50%),
+                        radial-gradient(at 100% 100%, #4c1d95 0px, transparent 50%),
+                        radial-gradient(at 0% 100%, #0f172a 0px, transparent 50%);
+            background-size: 200% 200%;
+            animation: aurora 20s ease infinite;
+            background-color: #0f172a;
+        }
+        
+        /* Floating particles overlay */
+        .ambient-bg::after {
+            content: "";
+            position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        @keyframes aurora { 
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Toast Notification --- */
+        .toast-container {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 2000; width: 90%; max-width: 400px; pointer-events: none;
+        }
+        .toast {
+            background: rgba(255, 255, 255, 0.95); color: #0f172a;
+            padding: 12px 24px; border-radius: 50px; margin-bottom: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            font-weight: 700; font-size: 0.95rem; text-align: center;
+            opacity: 0; transform: translateY(-20px) scale(0.9);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* --- Header --- */
+        .app-header {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 24px; padding-top: max(15px, env(safe-area-inset-top));
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand {
+            font-size: 1.2rem; font-weight: 800; color: white;
+            display: flex; align-items: center; gap: 12px;
+            letter-spacing: 0.5px;
+        }
+        .logo-placeholder {
+            width: 36px; height: 36px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            transform: rotate(-5deg);
+        }
+        .progress-pill {
+            background: rgba(255,255,255,0.05); padding: 6px 14px;
+            border-radius: 30px; font-size: 0.85rem; font-weight: 600;
+            border: 1px solid var(--glass-border); color: var(--secondary);
+        }
+
+        /* --- Controls --- */
+        .controls-area { padding: 30px 20px; text-align: center; }
+        .btn-spin {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0f172a; border: none; padding: 18px 36px; border-radius: 50px;
+            font-size: 1.1rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 0 30px rgba(45, 212, 191, 0.3);
+            display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+            transition: transform 0.2s; position: relative; overflow: hidden;
+            width: 100%; max-width: 320px; letter-spacing: 0.5px;
+        }
+        .btn-spin:active { transform: scale(0.96); }
+        .btn-spin::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent);
+            transform: skewX(-20deg); animation: shine 3s infinite;
+        }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+        .btn-spin.spinning i { animation: spinIcon 0.8s linear infinite; }
+        @keyframes spinIcon { 100% { transform: rotate(360deg); } }
+
+        /* --- Grid --- */
+        .container { max-width: 600px; margin: 0 auto; padding: 0 20px 60px 20px; }
+        .grid {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 40px;
+        }
+        .card {
+            aspect-ratio: 1; background: var(--glass-surface);
+            border: 1px solid var(--glass-border); border-radius: 14px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1rem; font-weight: 700; color: white;
+            cursor: pointer; position: relative;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px);
+            animation: cardEntrance 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes cardEntrance { to { opacity: 1; transform: translateY(0); } }
+        .card:active { transform: scale(0.9) !important; }
+        .card.highlight {
+            background: white; color: var(--primary);
+            box-shadow: 0 0 30px var(--primary);
+            transform: scale(1.2); z-index: 10; border-color: white;
+        }
+        .card.used {
+            background: rgba(0,0,0,0.3); border-color: transparent;
+            color: rgba(255,255,255,0.15); box-shadow: none;
+        }
+
+        /* --- Button Group --- */
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .btn-reset, .btn-support, .btn-bottom-spin {
+            padding: 16px; border-radius: 16px; font-size: 0.95rem;
+            font-weight: 600; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: all 0.3s; text-decoration: none;
+        }
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.05); color: var(--text-muted);
+            border: 1px solid var(--glass-border);
+        }
+        .btn-reset.confirming {
+            background: #ef4444; color: white; border-color: #ef4444;
+            animation: shake 0.4s ease-in-out;
+        }
+        
+        .btn-bottom-spin {
+            background: rgba(255, 255, 255, 0.08); color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 100%; margin-bottom: 20px;
+        }
+        .btn-bottom-spin:hover { background: rgba(255,255,255,0.15); }
+
+        .btn-support {
+            background: rgba(251, 191, 36, 0.1); color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+        .btn-support:hover {
+            background: #fbbf24; color: black;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+        }
+        
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        /* --- Payment Modal --- */
+        .pay-option {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            padding: 15px; border-radius: 16px; margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; transition: 0.2s;
+        }
+        .pay-option:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
+        .pay-icon { font-size: 1.5rem; margin-right: 15px; width: 30px; text-align: center; }
+        .pay-text { flex-grow: 1; text-align: left; }
+        .pay-label { display: block; font-weight: 700; color: white; font-size: 1rem; }
+        .pay-sub { display: block; font-size: 0.8rem; color: var(--text-muted); }
+
+        /* --- Question & Answer Modal --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            z-index: 100; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s; display: flex; align-items: flex-end; justify-content: center;
+        }
+        @media(min-width: 600px) { .modal-overlay { align-items: center; } }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        
+        .sheet {
+            background: linear-gradient(to bottom, #1e293b, #0f172a);
+            border-top: 1px solid rgba(255,255,255,0.15); border-radius: 30px 30px 0 0;
+            padding: 30px 24px; width: 100%; max-width: 600px;
+            padding-bottom: max(30px, env(safe-area-inset-bottom));
+            transform: translateY(110%); transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            box-shadow: 0 -10px 50px rgba(0,0,0,0.5); z-index: 101;
+        }
+        @media(min-width: 600px) { .sheet { border-radius: 30px; } }
+        .modal-overlay.active .sheet { transform: translateY(0); }
+
+        .category-badge {
+            display: inline-block; background: rgba(99, 102, 241, 0.15);
+            color: #c7d2fe; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+            padding: 8px 16px; border-radius: 10px; margin-bottom: 20px; letter-spacing: 1px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Premium Typography for Questions */
+        .q-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem; line-height: 1.4; font-weight: 600;
+            color: white; margin-bottom: 25px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Answer Reveal Section */
+        .answer-container {
+            margin-bottom: 30px; position: relative; min-height: 60px;
+        }
+        
+        /* Glassmorphism Answer Box */
+        .answer-box {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 16px; padding: 20px;
+            color: #d1fae5; font-family: 'Playfair Display', serif;
+            font-weight: 500; font-size: 1.1rem; line-height: 1.6;
+            display: none; box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+            animation: fadeIn 0.6s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .btn-reveal {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            color: var(--text-muted); width: 100%; padding: 20px; border-radius: 16px;
+            cursor: pointer; font-weight: 600; font-family: 'Outfit', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.2s;
+        }
+        .btn-reveal:hover { background: rgba(255, 255, 255, 0.1); color: white; border-color: white; }
+
+        .modal-actions { display: grid; grid-template-columns: 1fr 3fr; gap: 12px; display: none; /* Hidden until reveal */ }
+        .modal-actions.visible { display: grid; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn-share {
+            background: rgba(255,255,255,0.1); color: white;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 18px;
+            font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0f172a; border: none; padding: 18px; border-radius: 18px;
+            font-size: 1.1rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            position: relative; overflow: hidden;
+        }
+        .btn-primary::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
+            transform: skewX(-20deg); animation: shine 3s infinite;
+        }
+
+        .btn-close-text {
+            background: transparent; border: none; color: var(--text-muted);
+            margin-top: 20px; width: 100%; padding: 10px; font-size: 0.95rem; cursor: pointer;
+        }
+
+        /* Victory */
+        .victory-modal { text-align: center; display: none; }
+        .victory-modal.show { display: block; }
+        .victory-icon { font-size: 5rem; margin-bottom: 20px; animation: bounce 2s infinite; display: inline-block; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+
+        /* Confetti */
+        .confetti {
+            position: fixed; width: 8px; height: 8px; top: -10px; z-index: 200; pointer-events: none;
+            animation: fall linear forwards;
+        }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg"></div>
+    <div id="toastContainer" class="toast-container"></div>
+
+    <header class="app-header">
+        <div class="brand">
+            <div class="logo-placeholder"><i class="fa-solid fa-lightbulb"></i></div>
+            <span>Trivia Lab</span>
+        </div>
+        <div class="progress-pill">
+            <span id="progressText">0/105</span>
+        </div>
+    </header>
+
+    <div class="controls-area">
+        <button class="btn-spin" id="spinBtn" onclick="triggerSpin()">
+            <i class="fa-solid fa-arrows-rotate"></i> Spin Random
+        </button>
+    </div>
+
+    <div class="container">
+        <div class="grid" id="grid"></div>
+        
+        <!-- Additional Spin Button -->
+        <button class="btn-bottom-spin" onclick="triggerSpin()">
+            <i class="fa-solid fa-dice"></i> Spin Another
+        </button>
+
+        <div class="button-group">
+            <button id="resetBtn" class="btn-reset">
+                <i class="fa-solid fa-rotate-right"></i> Reset
+            </button>
+            <button class="btn-support" onclick="openDonationModal()">
+                <i class="fa-solid fa-hand-holding-heart"></i> Support
+            </button>
+        </div>
+        
+        <p style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.7rem; margin-top: 30px;">
+            Trivia Lab v2.0 Platinum
+        </p>
+    </div>
+
+    <!-- Question Modal -->
+    <div class="modal-overlay" id="overlay">
+        <div class="sheet" id="questionSheet">
+            <div id="qContent">
+                <div style="text-align: center;">
+                    <div style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 12px; font-weight: 700; letter-spacing: 1.5px;" id="mNumber">#</div>
+                    <div class="category-badge" id="mCategory">Fact</div>
+                    <div class="q-text" id="mText">...</div>
+                </div>
+                
+                <!-- Answer Section -->
+                <div class="answer-container">
+                    <button id="revealBtn" class="btn-reveal" onclick="revealAnswer()">
+                        <i class="fa-solid fa-eye"></i> Tap to Reveal Answer
+                    </button>
+                    <div id="answerBox" class="answer-box">
+                        <!-- Answer inserted here -->
+                    </div>
+                </div>
+
+                <!-- Actions (Hidden until reveal) -->
+                <div id="modalActions" class="modal-actions">
+                    <button class="btn-share" onclick="shareQuestion()">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </button>
+                    <button class="btn-primary" onclick="handleDone(true)">
+                        <i class="fa-solid fa-check"></i> Done & Spin Next <i class="fa-solid fa-arrows-rotate" style="font-size: 0.9em; margin-left: 5px;"></i>
+                    </button>
+                </div>
+                
+                <button class="btn-close-text" onclick="closeModal('overlay')">Close</button>
+            </div>
+
+            <!-- Victory Content -->
+            <div id="victoryContent" class="victory-modal">
+                <div class="victory-icon">🎓</div>
+                <div class="q-text">Knowledge Master!</div>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 30px; line-height: 1.6;">You have completed all 105 facts. Your brain is now officially heavier.</p>
+                <button class="btn-primary" onclick="resetGameForce()">
+                    <i class="fa-solid fa-rotate-right"></i> Restart Journey
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation Modal -->
+    <div class="modal-overlay" id="donationOverlay">
+        <div class="sheet">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="color:white; margin:0 0 10px 0; font-family: 'Playfair Display', serif;">Support the App 🧠</h2>
+                <p style="color:var(--text-muted); font-size:0.95rem; margin:0;">Creating educational content takes time. If you learned something new, a coffee would be amazing!</p>
+            </div>
+
+            <div class="pay-option" onclick="copyTelebirr('0912294220')">
+                <div class="pay-icon" style="color: #2D9CDB"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                <div class="pay-text">
+                    <span class="pay-label">Telebirr</span>
+                    <span class="pay-sub">0912294220 (Tap to Copy)</span>
+                </div>
+                <i class="fa-solid fa-copy" style="color: var(--text-muted)"></i>
+            </div>
+
+            <a href="#" target="_blank" style="text-decoration: none;" id="chapaLink">
+                <div class="pay-option">
+                    <div class="pay-icon" style="color: #00D09C"><i class="fa-solid fa-credit-card"></i></div>
+                    <div class="pay-text">
+                        <span class="pay-label">Donate via Chapa</span>
+                        <span class="pay-sub">Cards & Banks Accepted</span>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="color: var(--text-muted)"></i>
+                </div>
+            </a>
+            
+            <button class="btn-close-text" onclick="closeModal('donationOverlay')">Close</button>
+        </div>
+    </div>
+
+    <script>
+        /* ================= AUDIO ENGINE ================= */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'tick') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(300, now+0.05);
+                gain.gain.setValueAtTime(0.05, now); gain.gain.exponentialRampToValueAtTime(0.01, now+0.05);
+                osc.start(now); osc.stop(now+0.05);
+            } else if (type === 'pop') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(200, now); osc.frequency.linearRampToValueAtTime(400, now+0.1);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now+0.1);
+                osc.start(now); osc.stop(now+0.1);
+            } else if (type === 'success') {
+                [523.25, 659.25, 783.99].forEach((freq, i) => {
+                    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+                    o.connect(g); g.connect(audioCtx.destination);
+                    o.type = 'sine'; o.frequency.value = freq;
+                    g.gain.setValueAtTime(0.05, now+(i*0.1)); g.gain.exponentialRampToValueAtTime(0.001, now+1.5+(i*0.1));
+                    o.start(now+(i*0.1)); o.stop(now+1.6);
+                });
+            }
+        }
+
+        /* ================= DATABASE (105 EDU QUESTIONS) ================= */
+        const categoryColors = { 
+            "Nature": "#10b981", "History": "#f59e0b", "Science": "#3b82f6", 
+            "Space": "#8b5cf6", "Human": "#ec4899", "World": "#0ea5e9", "Fun": "#fbbf24", "Money": "#10b981"
+        };
+
+        const db = [
+            { id: 1, cat: "Nature", q: "ማር (Honey) ለምን አይበላሽም?", a: "ማር ባክቴሪያዎች እንዳይራቡ የሚያደርግ ተፈጥሮአዊ ባህሪ (Low moisture & Acidic pH) ስላለው፣ እርጥበት እና አየር እስካልገባበት ድረስ ለዘመናት አይበላሽም።" },
+            { id: 2, cat: "Human", q: "አብዛኛው ሰው በህይወት ዘመኑ በአማካይ ስንት ጊዜ አለምን በእግሩ ይዞራል?", a: "አንድ ሰው በአማካይ በህይወት ዘመኑ 110,000 ማይል ይራመዳል። ይህም አለምን በኢኳቶር (Equator) ዙሪያ 3 ጊዜ እንደመዞር ይቆጠራል።" },
+            { id: 3, cat: "Space", q: "አንድ ቀን ከ አንድ አመት የሚረዝምበት ፕላኔት የትኛው ነው?", a: "ቬነስ (Venus)። ቬነስ በራሷ ዛቢያ ለመዞር (አንድ ቀን) 243 የመሬት ቀናት ይፈጅባታል፣ ነገር ግን ፀሀይን ለመዞር (አንድ አመት) 225 ቀናት ብቻ ይፈጅባታል።" },
+            { id: 4, cat: "World", q: "በአለም ላይ ብዙ ደሴቶች ያሏት ሀገር ማን ናት?", a: "ስዊድን። ከ220,000 በላይ ደሴቶች አሏት። ከነዚህ ውስጥ ሰው የሚኖረው በ1,000ዎቹ ላይ ብቻ ነው።" },
+            { id: 5, cat: "Nature", q: "ኦክቶፐስ (Octopus) ስንት ልብ አለው?", a: "3 ልብ አለው። አንዱ ደም ወደ መላ አካሉ ሲያሰራጭ፣ ሁለቱ ደግሞ ወደ ሳንባዎቹ (Gills) ይልካሉ።" },
+            { id: 6, cat: "History", q: "በታሪክ አጭሩ ጦርነት ስንት ደቂቃ ፈጀ?", a: "38 ደቂቃ። እ.ኤ.አ በ1896 በእንግሊዝ እና በዛንዚባር መካከል የተደረገ ጦርነት ነበር።" },
+            { id: 7, cat: "Human", q: "የሰው ልጅ አጥንት ምን ያህል ጠንካራ ነው?", a: "የሰው አጥንት ክብደትን በመሸከም ረገድ ከኮንክሪት 4 እጥፍ ይጠነክራል። አንድ ኩዩቢክ ኢንች አጥንት 19,000 ፓውንድ ክብደት መሸከም ይችላል።" },
+            { id: 8, cat: "Science", q: "ውሃ ሳይጠጣ ብዙ ጊዜ መቆየት የሚችለው እንስሳ ማነው? ግመል ወይስ ቀጭኔ?", a: "ቀጭኔ። ግመል ብዙ ውሃ መጠጣት ቢችልም፣ ቀጭኔ ግን ከሚበላው ቅጠል ውሃ ስለሚያገኝ ብዙ ሳምንታት ሳይጠጣ መቆየት ይችላል።" },
+            { id: 9, cat: "World", q: "በአለም ላይ አራት ማዕዘን ያልሆነ ባንዲራ ያላት ብቸኛ ሀገር?", a: "ኔፓል (Nepal)። ባንዲራዋ የሁለት ሦስት ማዕዘን ቅርጽ ጥምረት ነው።" },
+            { id: 10, cat: "Space", q: "ፀሀይ ውስጥ ስንት መሬቶችን (Earth) መክተት ይቻላል?", a: "ወደ 1.3 ሚሊዮን የሚጠጉ መሬቶችን በፀሀይ ውስጥ መክተት ይቻላል። ፀሀይ የሶላር ሲስተም 99.8% ክብደት ትይዛለች።" },
+            { id: 11, cat: "Nature", q: "ፈፅሞ እንቅልፍ የማይተኛው እንስሳ ማነው?", a: "ጉንዳን። ጉንዳኖች አይተኙም፣ ነገር ግን 'Power Nap' የሚባል የ1 ደቂቃ እረፍት በቀን 250 ጊዜ ይወስዳሉ።" },
+            { id: 12, cat: "History", q: "ሻይ (Tea) መጀመሪያ የተገኘው የት ሀገር ነው?", a: "ቻይና። በአፈ ታሪክ መሰረት በ2737 BC ንጉስ ሼን ኖንግ ውሃ እያፈላ ቅጠል ገብቶበት በአጋጣሚ ተገኘ።" },
+            { id: 13, cat: "Human", q: "የጣት አሻራ (Fingerprint) የሚኖረን መቼ ነው?", a: "ፅንስ እያለን በ3ኛው ወር ላይ አሻራ ይወጣል። መንትዮች እንኳን የተለያየ አሻራ አላቸው።" },
+            { id: 14, cat: "World", q: "ከ 60% በላይ የአለም ሀይቆች የሚገኙት የት ነው?", a: "ካናዳ። ካናዳ ውስጥ ከ3 ሚሊዮን በላይ ሀይቆች አሉ።" },
+            { id: 15, cat: "Science", q: "ድምፅ በፍጥነት የሚጓዘው በውሃ ነው ወይስ በአየር?", a: "በውሃ። ድምፅ በውሃ ውስጥ በአየር ከሚጓዘው በ4 እጥፍ ይፈጥናል። ለዚህም ነው ዌልስ (Whales) በጣም ርቀት ላይ ሆነው የሚሰማሙት።" },
+            { id: 16, cat: "Nature", q: "ሙዝ (Banana) ፍራፍሬ ነው ወይስ ቅጠላቅጠል?", a: "በሳይንስ አጠራር ሙዝ 'Berry' (ብሉቤሪ አይነት) ነው፤ ተክሉ ደግሞ እንደ ትልቅ ቅጠላቅጠል (Herb) ይቆጠራል እንጂ ዛፍ አይደለም።" },
+            { id: 17, cat: "Human", q: "ምላስ የራሱ የሆነ አሻራ (Print) አለው?", a: "አዎ። ልክ እንደ ጣት አሻራ፣ የሁሉም ሰው የምላስ ቅርጽ እና መስመር የተለያየ ነው።" },
+            { id: 18, cat: "Space", q: "ጨረቃ ላይ የሰው ልጅ ዱካ ለስንት አመት ይቆያል?", a: "ለ100 ሚሊዮን አመታት። ምክንያቱም ጨረቃ ላይ ንፋስ ወይም ውሃ ስለሌለ ዱካውን የሚያጠፋው ነገር የለም።" },
+            { id: 19, cat: "World", q: "ወንዝ የሌለው ትልቁ ሀገር ማነው?", a: "ሳውዲ አረቢያ። ምንም ቋሚ ወንዝ የላትም። ውሃ የሚያገኙት ከባህር ጨው በማውጣት (Desalination) እና ከከርሰ ምድር ነው።" },
+            { id: 20, cat: "History", q: "ኬቻፕ (Ketchup) በ1830ዎቹ ለምን ይጠቅም ነበር?", a: "እንደ መድሃኒት። የሆድ ህመምን ለማከም በክኒን መልክ ይሸጥ ነበር።" },
+            { id: 21, cat: "Nature", q: "የሽሪምፕ (Shrimp) ልብ የት ይገኛል?", a: "ጭንቅላቱ ውስጥ።" },
+            { id: 22, cat: "Human", q: "የሰው አይን ስንት ሜጋፒክስል (Megapixel) ነው?", a: "ወደ 576 ሜጋፒክስል ይጠጋል። ካሜራዎች እስካሁን ይህንን ጥራት አልደረሱም።" },
+            { id: 23, cat: "Science", q: "ብርጭቆ (Glass) ፈሳሽ ነው ወይስ ጠጣር?", a: "Amorphous Solid ይባላል። በሞለኪውል ደረጃ ጠጣርም ፈሳሽም ያልሆነ መካከለኛ ባህሪ አለው።" },
+            { id: 24, cat: "World", q: "በአለም ላይ ብዙ ቋንቋ (840+) የሚነገርበት ሀገር?", a: "ፓፑዋ ኒው ጊኒ።" },
+            { id: 25, cat: "History", q: "ኦሊምፒክ የወርቅ ሜዳሊያ በእርግጥም ወርቅ ነው?", a: "አይደለም። የኦሊምፒክ ወርቅ ሜዳሊያ 92.5% ብር (Silver) ሲሆን በወርቅ የተለበጠ ነው። ሙሉ ወርቅ የነበረው በ1912 ብቻ ነበር።" },
+            { id: 26, cat: "Nature", q: "ምላሱን ማውጣት የማይችለው እንስሳ?", a: "አዞ። ምላሱ ከአፉ ጣራ ጋር የተጣበቀ ነው።" },
+            { id: 27, cat: "Human", q: "እራሱን መልሶ ማዳን (Regenerate) የሚችል የሰውነት ክፍል?", a: "ጉበት (Liver)። እስከ 75% ቢቆረጥ እንኳን መልሶ ማደግ የሚችል ብቸኛው የውስጥ አካል ነው።" },
+            { id: 28, cat: "Space", q: "ህዋ (Space) ውስጥ ማልቀስ ይቻላል?", a: "እንባ አይወርድም። በስበት (Gravity) እጥረት ምክንያት እንባው አይን ላይ ተጠራቅሞ ውሃ ይሰራል።" },
+            { id: 29, cat: "World", q: "ረጅሙ ወንዝ ናይል ነው ወይስ አማዞን?", a: "ናይል (አባይ) በትንሽ ልዩነት ይረዝማል (6,650 ኪ.ሜ)። አማዞን ግን በውሃ ይዘቱ (Volume) ይበልጣል።" },
+            { id: 30, cat: "Science", q: "Mpemba Effect ምንድን ነው?", a: "ሙቅ ውሃ ከቀዝቃዛ ውሃ ይልቅ በፍጥነት ወደ በረዶነት ይቀየራል የሚለው ሳይንሳዊ ክስተት ነው።" },
+            { id: 31, cat: "Nature", q: "ቢራቢሮ ጣዕም የሚቀምሰው በምኑ ነው?", a: "በእግሮቹ። ቅጠል ላይ ሲያርፉ ለእንቁላሎቻቸው ተስማሚ መሆኑን በእግራቸው ያውቃሉ።" },
+            { id: 32, cat: "History", q: "ቲታኒክ መርከብን ለመስራት ምን ያህል ፈጀ?", a: "7.5 ሚሊዮን ዶላር። የሚገርመው ነገር ቲታኒክ ፊልምን ለመስራት ከመርከቡ ዋጋ በላይ (200 ሚሊዮን ዶላር) ፈጅቷል።" },
+            { id: 33, cat: "Human", q: "ጥፍር በፍጥነት የሚያድገው በየትኛው እጅ ነው?", a: "በሚጽፉበት (Dominant) እጅ ላይ በፍጥነት ያድጋል።" },
+            { id: 34, cat: "World", q: "በአለም ላይ በብዛት የሚጎበኘው ሀገር?", a: "ፈረንሳይ። በዓመት ከ89 ሚሊዮን በላይ ቱሪስቶች ይጎበኟታል።" },
+            { id: 35, cat: "Science", q: "መብረቅ ከፀሀይ ይሞቃል?", a: "አዎ። የመብረቅ ሙቀት 27,700°C ሊደርስ ይችላል፣ ይህም ከፀሀይ ቆዳ 5 እጥፍ ይሞቃል።" },
+            { id: 36, cat: "Nature", q: "ቀንድ አውጣ (Snail) ለስንት ጊዜ መተኛት ይችላል?", a: "እስከ 3 አመት። የአየር ሁኔታው ካልተስማማቸው ለረጅም ጊዜ እንቅልፍ (Hibernation) ይወስዳሉ።" },
+            { id: 37, cat: "Human", q: "ሰው ሲዋሽ አፍንጫው ይሞቃል?", a: "አዎ 'Pinocchio Effect' ይባላል። ሲዋሹ ደም ወደ አፍንጫ አካባቢ ስለሚጠራቀም የሙቀት መጠኑ ይጨምራል።" },
+            { id: 38, cat: "Space", q: "በእኛ ጋላክሲ (Milky Way) ውስጥ ስንት ከዋክብት አሉ?", a: "ከ100 እስከ 400 ቢሊዮን ከዋክብት ይገኛሉ።" },
+            { id: 39, cat: "World", q: "የትኛው ሀገር ነው ዜሮ (0) የወንጀል መጠን ያለው?", a: "ቫቲካን። በጣም ትንሽ እና ጥብቅ ጥበቃ ስላላት።" },
+            { id: 40, cat: "History", q: "ስልክን የፈጠረው ማነው?", a: "አሌክሳንደር ግራሃም ቤል። የመጀመሪያው የስልክ ጥሪ ለረዳቱ 'ዋትሰን ና ወደዚህ፣ እፈልግሃለሁ' የሚል ነበር።" },
+            { id: 41, cat: "Nature", q: "መዝለል የማይችለው ብቸኛው እንስሳ?", a: "ዝሆን (Elephant)። ክብደታቸው ስለማይፈቅድ አራቱንም እግሮች በአንዴ መሬት መልቀቅ አይችሉም።" },
+            { id: 42, cat: "Human", q: "በጣም ጠንካራው የሰውነት ጡንቻ?", a: "Masseter (የመንጋጋ ጡንቻ)። እስከ 200 ፓውንድ ግፊት መፍጠር ይችላል። ምላስ ደግሞ ሳይደክም በመስራት ጠንካራ ነው።" },
+            { id: 43, cat: "Science", q: "ዳይመንድ (Diamond) ከምን ይሰራል?", a: "ከካርቦን (Carbon)። እርሳስ (Pencil) ከሚሰራበት ግራፋይት ጋር አንድ አይነት ኤለመንት ነው፣ አወቃቀሩ ብቻ ይለያል።" },
+            { id: 44, cat: "World", q: "በአለም ላይ ትልቁ በረሃ የትኛው ነው?", a: "አንታርክቲካ። በረሃ ማለት ሙቀት ማለት አይደለም፤ በረሃ ማለት ዝናብ የማይዘንብበት ቦታ ማለት ነው።" },
+            { id: 45, cat: "History", q: "የጥንት ግብፃውያን ትራስ (Pillow) ከምን ይሰራ ነበር?", a: "ከድንጋይ ወይም ከእንጨት። ነፍሳት ጆሮ ውስጥ እንዳይገቡ እና የፀጉር አሠራር እንዳይበላሽ ይጠቀሙበት ነበር።" },
+            { id: 46, cat: "Nature", q: "አሳ ውሃ ይጠማዋል?", a: "የባህር አሳዎች ይጠማቸዋል (ጨዋማ ውሃ ስለሆነ ሰውነታቸው ውሃ ያጣል)፣ የወንዝ አሳዎች ግን አይጠሙም።" },
+            { id: 47, cat: "Human", q: "እራሱን መጠገን የማይችለው የሰውነት ክፍል?", a: "ጥርስ። ሌሎች የሰውነት ክፍሎች ሲጎዱ ሴሎች ይተካሉ፣ ጥርስ ግን መተካት አይችልም።" },
+            { id: 48, cat: "Space", q: "ፀሀይ ምን አይነት ቀለም አላት?", a: "ነጭ (White)። ከባቢ አየር (Atmosphere) ብርሃኑን ስለሚበትነው ነው ለኛ ቢጫ ወይም ቀይ የምትመስለን።" },
+            { id: 49, cat: "World", q: "በአለም ላይ ረጅሙ ፊደል (Alphabet) ያለው ሀገር?", a: "ካምቦዲያ (Cambodia)። 74 ፊደላት አሏቸው።" },
+            { id: 50, cat: "Science", q: "እሳት ጥላ (Shadow) አለው?", a: "የለውም። ጥላ የሚፈጠረው ብርሃን በሆነ ነገር ሲጋርድ ነው። እሳት እራሱ ብርሃን ስለሆነ ጥላ የለውም።" },
+            { id: 51, cat: "Nature", q: "ላሞች የቅርብ ጓደኛ አላቸው?", a: "አዎ። ላሞች 'Best Friend' አላቸው፣ ከተለያዩ ደግሞ ጭንቀት ይሰማቸዋል (Heart rate ይጨምራል)።" },
+            { id: 52, cat: "Science", q: "በውሃ ላይ የሚንሳፈፍ ፍራፍሬ ማነው?", a: "ፖም (Apple)። 25% ይዘቱ አየር ስለሆነ ውሃ ላይ ይንሳፈፋል።" },
+            { id: 53, cat: "Space", q: "በጠፈር የተበላ የመጀመሪያው ምግብ?", a: "የፖም ማልማት (Apple sauce)። እ.ኤ.አ በ1962 ጆን ግሌን በቲዩብ ተሽጎ በላው።" },
+            { id: 54, cat: "Nature", q: "መብረር የሚችለው ብቸኛው አጥቢ እንስሳ?", a: "የሌሊት ወፍ (Bat)። የበረራ ሽኮኮዎች (Flying squirrels) ይንሸራተታሉ እንጂ አይበሩም።" },
+            { id: 55, cat: "World", q: "በዓለም ብዙ የሰዓት ክልል (Time Zone) ያለው ሀገር?", a: "ፈረንሳይ። ቅኝ ግዛቶቿን ጨምሮ 12 የሰዓት ክልሎች አሏት። ሩሲያና አሜሪካ ይከተላሉ።" },
+            { id: 56, cat: "Nature", q: "ቀንድ አውጣ ስንት አፍንጫ አለው?", a: "4 አፍንጫ። ሁለቱ ለማሽተት ሲሆኑ ሁለቱ ደግሞ ለማየት ያገለግላሉ።" },
+            { id: 57, cat: "Human", q: "አይንን ከፍቶ ማắtስ ይቻላል?", a: "በጣም ይከብዳል። ሰው ሲያắtስ አውቶማቲክ የሆነ የነርቭ ምላሽ አይንን ያስጨፍናል።" },
+            { id: 58, cat: "Science", q: "በዓለም ላይ በጣም የሚያቃጥለው ሚጥሚጣ?", a: "Carolina Reaper። 2.2 ሚሊዮን Scoville Heat Units (SHU) አለው።" },
+            { id: 59, cat: "History", q: "የመቶ አመት ጦርነት ለስንት አመት ቆየ?", a: "116 አመት። በእንግሊዝና ፈረንሳይ መካከል ከ1337 እስከ 1453 የተደረገ ጦርነት ነው።" },
+            { id: 60, cat: "Space", q: "ዳይመንድ የሚዘንብባቸው ፕላኔቶች?", a: "ኔፕቱን እና ዩራነስ። እዛ ያለው ከፍተኛ ግፊት (Pressure) ካርቦንን ወደ ዳይመንድ ይቀይረዋል።" },
+            { id: 61, cat: "Nature", q: "በጣም ጠንካራ መንጋጋ ያለው እንስሳ?", a: "አዞ (Nile Crocodile)። በአንድ ንክሻ 5,000 psi ግፊት መፍጠር ይችላል።" },
+            { id: 62, cat: "Human", q: "የሰው ልጅ ስንት በመቶ የአንጎሉን ክፍል ይጠቀማል?", a: "100%። '10% ብቻ ነው የምንጠቀመው' የሚለው አባባል ሳይንሳዊ መሰረት የለውም።" },
+            { id: 63, cat: "World", q: "የዓለም ትንሿ ሀገር?", a: "ቫቲካን። ስፋቷ 0.44 ካሬ ኪሎሜትር ብቻ ነው።" },
+            { id: 64, cat: "World", q: "በዓለም ላይ በጣም ቀዝቃዛው ቦታ?", a: "አንታርክቲካ። የሙቀት መጠኑ እስከ -89.2°C ወርዶ ያውቃል።" },
+            { id: 65, cat: "Nature", q: "የጉማሬ ወተት ምን ቀለም ነው?", a: "ሮዝ (Pink)። ጉማሬዎች የሚያመነጩት አሲድ ከወተቱ ጋር ሲቀላቀል ቀለሙን ይቀይረዋል።" },
+            { id: 66, cat: "Space", q: "ወደ ጠፈር የተላከ የመጀመሪያው እንስሳ?", a: "ላይካ (Laika) የተባለችው ውሻ። በ1957 በሶቪየት ህብረት ተላከች።" },
+            { id: 67, cat: "Science", q: "በክፍል የሙቀት መጠን (Room temp) ፈሳሽ የሆነ ብረት?", a: "ሜርኩሪ (Mercury)።" },
+            { id: 68, cat: "World", q: "ከስር እስከ ጫፍ (Base to Peak) ረጅሙ ተራራ?", a: "ማውና ኬያ (ሃዋይ)። አብዛኛው ክፍሉ ባህር ውስጥ ስላለ ነው እንጂ ከኤቨረስት ይረዝማል።" },
+            { id: 69, cat: "Space", q: "በዩኒቨርስ ውስጥ በብዛት የሚገኘው ኤለመንት?", a: "ሃይድሮጅን (Hydrogen)። የዩኒቨርስን 75% ይሸፍናል።" },
+            { id: 70, cat: "Nature", q: "ሻርክ አጥንት አለው?", a: "የለውም። ሙሉ ሰውነቱ የተሰራው ከCartilage (እንደ ጆሮአችን ያለ ለስላሳ አጥንት) ነው።" },
+            { id: 71, cat: "Human", q: "አዋቂ ሰው ስንት ጥርስ አለው?", a: "32 ጥርስ (የመንጋጋ ጥርሶችን ጨምሮ)።" },
+            { id: 72, cat: "Nature", q: "በመሬት ላይ ፈጣኑ እንስሳ?", a: "ቺታ (Cheetah)። በሰዓት እስከ 120 ኪ.ሜ መሮጥ ይችላል።" },
+            { id: 73, cat: "World", q: "ብዙ ፒራሚድ ያለው ሀገር ግብፅ ነው?", a: "አይደለም፣ ሱዳን ነው። ሱዳን ውስጥ ከ200 በላይ ፒራሚዶች ሲኖሩ ግብፅ ውስጥ 138 ብቻ ናቸው።" },
+            { id: 74, cat: "Human", q: "ለቆዳችን ቀለም የሚሰጠው ነገር ምንድን ነው?", a: "ሜላኒን (Melanin)። ሜላኒን ሲበዛ ቆዳ ይጠቁራል፣ ሲያንስ ይቀላል።" },
+            { id: 75, cat: "Science", q: "በዓለም ላይ በጣም ጠንካራው የተፈጥሮ ነገር?", a: "ዳይመንድ (Diamond)። ሊቆርጠው የሚችለው ሌላ ዳይመንድ ብቻ ነው።" },
+            { id: 76, cat: "Nature", q: "አሳማ ወደ ሰማይ ቀና ማለት ይችላል?", a: "አይችልም። የአንገቱ አጥንት አወቃቀር ስለማይፈቅድለት ሰማይን ማየት አይችልም።" },
+            { id: 77, cat: "World", q: "በዓለም ላይ ብዙ ተናጋሪ ያለው ቋንቋ?", a: "ማንደሪን (ቻይንኛ)። እንግሊዝኛ በስፋት ቢነገርም፣ እንደ መጀመሪያ ቋንቋ ቻይንኛ ይበልጣል።" },
+            { id: 78, cat: "Space", q: "ቀይ ፕላኔት በመባል የሚታወቀው?", a: "ማርስ (Mars)። ቀይ የሆነው በአፈር ውስጥ ባለው Iron Oxide (ዝገት) ምክንያት ነው።" },
+            { id: 79, cat: "Human", q: "የሰው ልብ ስንት ክፍሎች አሉት?", a: "4 ክፍሎች (Chambers) አሉት።" },
+            { id: 80, cat: "Nature", q: "እጽዋት የሚተነፍሱት ጋዝ?", a: "ካርቦን ዳይኦክሳይድ (CO2) ተንፍሰው ኦክስጅን (O2) ይተፋሉ።" },
+            { id: 81, cat: "History", q: "ሞናሊዛን የሳላት ማነው?", a: "ሊዮናርዶ ዳቪንቺ (Leonardo da Vinci)።" },
+            { id: 82, cat: "Space", q: "የፀሐይ ብርሃን መሬት ለመድረስ ምን ያህል ጊዜ ይፈጃል?", a: "8 ደቂቃ ከ20 ሰከንድ።" },
+            { id: 83, cat: "Nature", q: "ሸረሪት የሌለበት ብቸኛው አህጉር?", a: "አንታርክቲካ። በከፍተኛ ቅዝቃዜ ምክንያት ሸረሪቶች እዛ መኖር አይችሉም።" },
+            { id: 84, cat: "Nature", q: "በዓለም ላይ ፈጣኑ ወፍ?", a: "ፔሬግሪን ፋልኮን (Peregrine Falcon)። ወደ ታች ሲወርድ በሰዓት 389 ኪ.ሜ ይጓዛል።" },
+            { id: 85, cat: "World", q: "ትልቁ ውቅያኖስ?", a: "ፓስፊክ ውቅያኖስ። የመሬትን አንድ ሦስተኛ ክፍል ይሸፍናል።" },
+            { id: 86, cat: "Human", q: "የሰው አካል ስንት ፐርሰንት ውሃ ነው?", a: "በአማካይ 60%።" },
+            { id: 87, cat: "Space", q: "ጠፈር ውስጥ ድምፅ ይሰማል?", a: "አይሰማም። ድምፅ ለመጓዝ አየር ያስፈልገዋል፣ ጠፈር ደግሞ ባዶ (Vacuum) ነው።" },
+            { id: 88, cat: "Nature", q: "የፖላር ድብ ቆዳ ምን ቀለም ነው?", a: "ጥቁር። ፀጉሩ ነጭ ሆኖ የፀሀይ ብርሃን ሲያንጸባርቅ ነው ነጭ የሚመስለው። ጥቁር ቆዳው ሙቀት ለመሳብ ይረደዋል።" },
+            { id: 89, cat: "Nature", q: "ፊላሚንጎ ሲወለድ ምን ቀለም ነው?", a: "ነጭ ወይም ግራጫ። ሮዝ (Pink) የሚሆኑት ከሚበሉት ሽሪምፕ (Shrimp) በሚያገኙት ንጥረ ነገር ነው።" },
+            { id: 90, cat: "Human", q: "በሰውነት ውስጥ ትንሿ አጥንት የት ትገኛለች?", a: "ጆሮ ውስጥ። ስቴፕስ (Stapes) ትባላለች፣ መጠኗም ከሩዝ ፍሬ ያንሳል።" },
+            { id: 91, cat: "World", q: "ብዙ ቸኮሌት የሚበላው ህዝብ?", a: "ስዊዘርላንድ። አንድ ሰው በአመት በአማካይ 8.8 ኪሎ ቸኮሌት ይበላል።" },
+            { id: 92, cat: "History", q: "የመጀመሪያው የሞባይል ጥሪ የተደረገው መቼ ነው?", a: "1973 እ.ኤ.አ. በማርቲን ኩፐር (የሞቶሮላ ኢንጂነር) ተደረገ።" },
+            { id: 93, cat: "Nature", q: "የቁራዎች ስብስብ ምን ይባላል?", a: "'A Murder' ይባላል።" },
+            { id: 94, cat: "Nature", q: "አሳ ይተኛል?", a: "አዎ። አይኖቻቸውን መዝጋት ባይችሉም (ቆብ ስለሌላቸው)፣ አንጎላቸውን በማሳረፍ ይተኛሉ።" },
+            { id: 95, cat: "Space", q: "በጣም ሞቃታማው ፕላኔት ማነው?", a: "ቬነስ። ምንም እንኳን ሜርኩሪ ለፀሀይ ቅርብ ብትሆንም፣ ቬነስ በከባቢ አየሯ ሙቀት ስለምታምቅ ትበልጣለች።" },
+            { id: 96, cat: "Nature", q: "በዓለም ላይ ትልቁ እንስሳ?", a: "ብሉ ዌል (Blue Whale)። ምላሱ ብቻ የዝሆንን ያህል ይከብዳል።" },
+            { id: 97, cat: "Human", q: "በሰውነት ውስጥ ስንት ሊትር ደም አለ?", a: "ከ 4.5 እስከ 5.5 ሊትር።" },
+            { id: 98, cat: "Space", q: "ለመሬት ቅርብ የሆነው ኮከብ?", a: "ፀሐይ። ፀሐይም ኮከብ ናት።" },
+            { id: 99, cat: "World", q: "በዓለም ውዱ ቅመም?", a: "ሳፍሮን (Saffron)። 1 ኪሎ ለማምረት 150,000 አበባዎችን መለቀም ይጠይቃል።" },
+            { id: 100, cat: "Science", q: "እስከ 1 ቢሊዮን ለመቁጠር ስንት ጊዜ ይፈጃል?", a: "ያለ እረፍት ቢቆጠር 31 ዓመታት ከ251 ቀናት ይፈጃል።" },
+            { id: 101, cat: "Money", q: "በዓለም ላይ ቁጥር አንድ ሀብታም ሰው ማነው?", a: "ኢሎን ማስክ (Elon Musk)። የTesla እና SpaceX መስራች ሲሆን ሀብቱ ከ200 ቢሊዮን ዶላር በላይ ይገመታል።" },
+            { id: 102, cat: "Nature", q: "የዎምባት (Wombat) ኩስ (Poop) ምን አይነት ቅርጽ አለው?", a: "ኪዩብ (Cube)። ይህ ቅርጽ ኩሱ እንዳይሽከረከር እና ግዛቱን ለመለየት ይረዳዋል።" },
+            { id: 103, cat: "Science", q: "አንድ ደመና (Cloud) ምን ያህል ክብደት ይኖረዋል?", a: "አማካይ ደመና 500,000 ኪሎ ግራም ይመዝናል። ይህም የ100 ዝሆኖች ክብደት ያህል ነው።" },
+            { id: 104, cat: "Nature", q: "አቮካዶ ፍራፍሬ ነው ወይስ አትክልት?", a: "ፍራፍሬ (Fruit)። በሳይንስ አጠራር እንደ ትልቅ 'Berry' ይቆጠራል።" },
+            { id: 105, cat: "Science", q: "የሰው ልጅ DNA ከ ሙዝ ጋር ምን ያህል ይመሳሰላል?", a: "ወደ 50% ገደማ። ይህ የሚያሳየው ህይወት ያላቸው ነገሮች ሁሉ የጋራ መነሻ እንዳላቸው ነው።" }
+        ];
+
+        /* ================= STATE ================= */
+        const appState = { usedIds: JSON.parse(localStorage.getItem('trivia_used_v1')) || [], currentId: null, isSpinning: false, total: db.length };
+
+        /* ================= HELPERS ================= */
+        function showToast(msg, icon="fa-info-circle") {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
+            c.appendChild(t);
+            requestAnimationFrame(()=>t.classList.add('show'));
+            setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),300); },3000);
+        }
+        function haptic(type="light") { if(navigator.vibrate) navigator.vibrate({light:10,medium:25,heavy:[30,40,30]}[type]); }
+
+        /* ================= RENDER ================= */
+        const gridEl = document.getElementById("grid");
+        function renderGrid() {
+            const frag = document.createDocumentFragment();
+            gridEl.innerHTML = "";
+            db.forEach((item, index) => {
+                const el = document.createElement("div");
+                el.className = "card " + (appState.usedIds.includes(item.id) ? "used" : "");
+                el.textContent = item.id;
+                el.style.animationDelay = `${index*15}ms`;
+                el.onclick = () => { if(!appState.isSpinning) openModal(item.id); };
+                frag.appendChild(el);
+            });
+            gridEl.appendChild(frag);
+            updateProgress();
+        }
+
+        /* ================= GAMEPLAY ================= */
+        function triggerSpin() {
+            const available = db.filter(d => !appState.usedIds.includes(d.id));
+            if(available.length === 0) return checkCompletion();
+            appState.isSpinning = true;
+            
+            document.getElementById("spinBtn").classList.add("spinning");
+            
+            let counter = 0, speed = 20, lastHighlight = null;
+            const step = () => {
+                if(lastHighlight) gridEl.children[lastHighlight.id-1].classList.remove("highlight");
+                const randomItem = available[Math.floor(Math.random() * available.length)];
+                const el = gridEl.children[randomItem.id-1];
+                el.classList.add("highlight");
+                el.scrollIntoView({behavior:"smooth",block:"center"});
+                lastHighlight = randomItem;
+                playSound('tick');
+                counter++;
+                if(counter < 25) {
+                    speed = Math.floor(speed * 1.15); setTimeout(step, speed);
+                } else {
+                    setTimeout(() => {
+                        el.classList.remove("highlight"); openModal(randomItem.id);
+                        document.getElementById("spinBtn").classList.remove("spinning"); 
+                        appState.isSpinning = false; haptic("medium");
+                    }, 500);
+                }
+            };
+            step();
+        }
+
+        const overlay = document.getElementById("overlay");
+        const qContent = document.getElementById("qContent");
+        const vContent = document.getElementById("victoryContent");
+
+        function openModal(id) {
+            appState.currentId = id;
+            const data = db.find(x => x.id === id);
+            qContent.style.display = "block"; vContent.classList.remove("show");
+            
+            // Reset Reveal State
+            document.getElementById("revealBtn").style.display = "flex";
+            document.getElementById("answerBox").style.display = "none";
+            document.getElementById("modalActions").classList.remove("visible");
+
+            document.getElementById("mCategory").textContent = data.cat;
+            // Fallback color if category not found
+            const catColor = categoryColors[data.cat] || "#6366f1";
+            document.getElementById("mCategory").style.color = catColor;
+            document.getElementById("mCategory").style.background = catColor+"30";
+            document.getElementById("mCategory").style.borderColor = catColor+"50";
+
+            document.getElementById("mNumber").textContent = "QUESTION " + id;
+            document.getElementById("mText").textContent = data.q;
+            document.getElementById("answerBox").textContent = data.a;
+            
+            overlay.classList.add("active");
+            haptic("light"); playSound('pop');
+        }
+
+        /* ================= REVEAL LOGIC ================= */
+        function revealAnswer() {
+            document.getElementById("revealBtn").style.display = "none";
+            document.getElementById("answerBox").style.display = "block";
+            document.getElementById("modalActions").classList.add("visible");
+            haptic("medium");
+            playSound('pop');
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove("active"); }
+        overlay.onclick = (e) => { if(e.target === overlay) closeModal('overlay'); };
+        document.getElementById("donationOverlay").onclick = (e) => { if(e.target === document.getElementById("donationOverlay")) closeModal('donationOverlay'); };
+
+        /* ================= FEATURES ================= */
+        function shareQuestion() {
+            const data = db.find(x => x.id === appState.currentId);
+            const text = `🧠 Trivia Lab Question #${data.id}\n\n❓ ${data.q}\n💡 Answer: ${data.a}`;
+            if(navigator.share) navigator.share({title:'Trivia Lab',text:text}).catch(()=>copyToClipboard(text));
+            else copyToClipboard(text);
+        }
+        function copyToClipboard(text) { 
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied to clipboard!", "fa-copy");
+                haptic("medium");
+            } catch (err) { console.error('Fallback copy failed', err); }
+            document.body.removeChild(textArea);
+        }
+
+        function handleDone(spinNext = false) {
+            const id = appState.currentId;
+            if(id && !appState.usedIds.includes(id)) {
+                appState.usedIds.push(id);
+                localStorage.setItem("trivia_used_v1", JSON.stringify(appState.usedIds));
+                renderGrid(); triggerConfetti(); playSound('success');
+                if(appState.usedIds.length === appState.total) setTimeout(()=>showVictory(), 500);
+            }
+            closeModal('overlay');
+            if(spinNext) setTimeout(() => { triggerSpin(); }, 600);
+        }
+
+        function showVictory() {
+            qContent.style.display = "none"; vContent.classList.add("show");
+            overlay.classList.add("active"); triggerMegaConfetti(); playSound('success');
+        }
+
+        function triggerConfetti(count=30) {
+            const colors = ['#6366f1','#8b5cf6','#10b981','#fff','#f59e0b'];
+            for(let i=0;i<count;i++){
+                const c=document.createElement('div'); c.className='confetti';
+                c.style.left=Math.random()*100+'vw';
+                c.style.backgroundColor=colors[Math.floor(Math.random()*colors.length)];
+                c.style.animationDuration=(Math.random()*2+1)+'s';
+                document.body.appendChild(c); setTimeout(()=>c.remove(),3000);
+            }
+        }
+        function triggerMegaConfetti(){ triggerConfetti(120); }
+
+        function updateProgress() { document.getElementById("progressText").textContent = `${appState.usedIds.length}/${appState.total}`; }
+
+        function checkCompletion() {
+             showToast("All questions completed! Reset to play again.", "fa-trophy");
+        }
+
+        /* ================= RESET & SUPPORT ================= */
+        const resetBtn = document.getElementById("resetBtn");
+        let resetTimeout;
+        resetBtn.onclick = () => {
+            if(resetBtn.classList.contains("confirming")) resetGameForce();
+            else {
+                resetBtn.classList.add("confirming");
+                resetBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Confirm';
+                clearTimeout(resetTimeout);
+                resetTimeout = setTimeout(() => {
+                    resetBtn.classList.remove("confirming");
+                    resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Reset';
+                }, 3000);
+            }
+        };
+
+        function resetGameForce() {
+            appState.usedIds = []; localStorage.removeItem("trivia_used_v1"); renderGrid();
+            resetBtn.classList.remove("confirming");
+            resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Reset';
+            showToast("Game Reset!", "fa-trash-can"); haptic("heavy"); closeModal('overlay');
+        }
+
+        function openDonationModal() {
+            document.getElementById("donationOverlay").classList.add("active");
+            playSound('pop');
+        }
+
+        function copyTelebirr(num) {
+            copyToClipboard(num);
+            showToast("Telebirr number copied!", "fa-check");
+        }
+
+        /* ================= START ================= */
+        renderGrid();
+    </script>
+</body>
+</html>
