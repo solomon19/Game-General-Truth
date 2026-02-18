@@ -13,6 +13,20 @@
     <meta property="og:type" content="website">
 
     <title>Trivia Lab 🧠</title>
+
+    <!-- ========================================== -->
+    <!-- 📊 GOOGLE ANALYTICS SETUP              -->
+    <!-- ========================================== -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MYXBLFX5ED"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-MYXBLFX5ED');
+    </script>
+    <!-- ========================================== -->
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,9 +36,13 @@
 
     <style>
         :root {
+            /* SEASONAL "AURORA" PALETTE */
             --primary: #818cf8;    /* Indigo */
             --secondary: #2dd4bf;  /* Teal */
             --accent: #fbbf24;     /* Gold */
+            --youtube: #ff0000;    /* YouTube Red */
+            --telebirr: #2D9CDB;   /* Telebirr Blue */
+            --chapa: #00D09C;      /* Chapa Green */
             --bg-dark: #0f172a;    /* Midnight */
             
             --glass-surface: rgba(30, 41, 59, 0.7);
@@ -92,6 +110,20 @@
             padding: 15px 24px; padding-top: max(15px, env(safe-area-inset-top));
             display: flex; justify-content: space-between; align-items: center;
         }
+        .brand {
+            font-size: 1.2rem; font-weight: 800; color: white;
+            display: flex; align-items: center; gap: 12px;
+            letter-spacing: 0.5px;
+        }
+        .logo-placeholder {
+            width: 36px; height: 36px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            transform: rotate(-5deg);
+        }
+        
         .xp-container { display: flex; flex-direction: column; align-items: flex-start; }
         .level-badge {
             font-size: 0.75rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px;
@@ -205,7 +237,7 @@
         .pay-label { display: block; font-weight: 700; color: white; font-size: 1rem; }
         .pay-sub { display: block; font-size: 0.8rem; color: var(--text-muted); }
 
-        /* --- Question Modal --- */
+        /* --- Question & Answer Modal --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.8);
             backdrop-filter: blur(16px); z-index: 100; opacity: 0; visibility: hidden;
@@ -278,6 +310,20 @@
             margin-top: 20px; width: 100%; padding: 10px; font-size: 0.95rem; cursor: pointer;
         }
 
+        /* --- YouTube Gate Modal --- */
+        .yt-modal { text-align: center; }
+        .yt-icon { font-size: 4rem; color: var(--youtube); margin-bottom: 15px; animation: pulse 2s infinite; }
+        .btn-yt {
+            background: var(--youtube); color: white; border: none; padding: 18px; border-radius: 18px;
+            font-size: 1.1rem; font-weight: 800; width: 100%; cursor: pointer; margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.4);
+        }
+        .btn-yt-check {
+            background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);
+            padding: 15px; border-radius: 18px; width: 100%; font-weight: 600; cursor: pointer;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
         /* Victory */
         .victory-modal { text-align: center; display: none; }
         .victory-modal.show { display: block; }
@@ -299,6 +345,10 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <header class="app-header">
+        <div class="brand">
+            <div class="logo-placeholder"><i class="fa-solid fa-lightbulb"></i></div>
+            <span>Trivia Lab</span>
+        </div>
         <div class="xp-container">
             <div class="level-badge">
                 <i class="fa-solid fa-crown"></i> <span id="rankTitle">Novice</span>
@@ -333,7 +383,7 @@
         </div>
         
         <p style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.7rem; margin-top: 30px;">
-            Trivia Lab v3.1 Fixed
+            Trivia Lab v4.1 Final
         </p>
     </div>
 
@@ -373,6 +423,30 @@
                 <p style="color: rgba(255,255,255,0.7); margin-bottom: 30px; line-height: 1.6;">You have completed all 105 facts.</p>
                 <button class="btn-primary" onclick="resetGameForce()">
                     <i class="fa-solid fa-rotate-right"></i> Restart Journey
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- YouTube Gate Modal -->
+    <div class="modal-overlay" id="ytGateOverlay" style="z-index: 9999;">
+        <div class="sheet">
+            <div class="yt-modal">
+                <div class="yt-icon"><i class="fa-brands fa-youtube"></i></div>
+                <h2 style="color:white; margin-bottom: 10px;">Welcome to Trivia Lab!</h2>
+                <p style="color:var(--text-muted); margin-bottom: 25px; line-height: 1.5;">
+                    This premium app is free to use. <br>Please <b>Subscribe</b> to my channel to unlock it.
+                </p>
+                
+                <!-- LINKED TO SOLO PODCAST -->
+                <a href="https://www.youtube.com/channel/UCuflrha5RH0t7T0KFtRXHtg?sub_confirmation=1" target="_blank" onclick="handleSubClick()" style="text-decoration:none;">
+                    <button class="btn-yt">
+                        <i class="fa-brands fa-youtube"></i> Subscribe Now
+                    </button>
+                </a>
+                
+                <button id="btnYtContinue" class="btn-yt-check" onclick="checkSub()" style="opacity: 0.5; pointer-events: none;">
+                    I Subscribed
                 </button>
             </div>
         </div>
@@ -439,6 +513,8 @@
         }
 
         const categoryColors = { "Nature": "#10b981", "History": "#f59e0b", "Science": "#3b82f6", "Space": "#8b5cf6", "Human": "#ec4899", "World": "#0ea5e9", "Fun": "#fbbf24", "Money": "#10b981" };
+        
+        // LONG EDUCATIONAL ANSWERS DB
         const db = [
             { id: 1, cat: "Nature", q: "ማር (Honey) ለምን አይበላሽም?", a: "ማር ባክቴሪያዎች እንዳይራቡ የሚያደርግ ተፈጥሮአዊ ባህሪ (Low moisture & Acidic pH) ስላለው፣ እርጥበት እና አየር እስካልገባበት ድረስ ለዘመናት አይበላሽም።" },
             { id: 2, cat: "Human", q: "አብዛኛው ሰው በህይወት ዘመኑ በአማካይ ስንት ጊዜ አለምን በእግሩ ይዞራል?", a: "አንድ ሰው በአማካይ በህይወት ዘመኑ 110,000 ማይል ይራመዳል። ይህም አለምን በኢኳቶር (Equator) ዙሪያ 3 ጊዜ እንደመዞር ይቆጠራል።" },
@@ -553,7 +629,8 @@
             xp: parseInt(localStorage.getItem('trivia_xp_v2')) || 0,
             currentId: null,
             isSpinning: false,
-            total: db.length
+            total: db.length,
+            hasSubscribed: localStorage.getItem('trivia_sub_v1') === 'true'
         };
 
         const ranks = [
@@ -684,7 +761,7 @@
             // Fallback color logic
             const catColor = ({ 
                 "Nature": "#10b981", "History": "#f59e0b", "Science": "#3b82f6", 
-                "Space": "#8b5cf6", "Human": "#ec4899", "World": "#0ea5e9"
+                "Space": "#8b5cf6", "Human": "#ec4899", "World": "#0ea5e9", "Fun": "#fbbf24", "Money": "#10b981"
             })[data.cat] || "#6366f1";
             
             const catBadge = document.getElementById("mCategory");
@@ -795,6 +872,34 @@
 
         function openDonationModal() { document.getElementById("donationOverlay").classList.add("active"); playSound('pop'); }
         function copyTelebirr(num) { copyToClipboard(num); showToast("Number Copied!", "fa-check"); }
+
+        /* ================= YOUTUBE GATE LOGIC ================= */
+        const ytOverlay = document.getElementById('ytGateOverlay');
+        const ytBtnContinue = document.getElementById('btnYtContinue');
+
+        // Check subscription status on load
+        if (!appState.hasSubscribed) {
+            // Show modal with a slight delay for effect
+            setTimeout(() => ytOverlay.classList.add('active'), 500);
+        }
+
+        function handleSubClick() {
+            // User clicked Subscribe -> Enable the "I Subscribed" button
+            ytBtnContinue.style.opacity = '1';
+            ytBtnContinue.style.pointerEvents = 'auto';
+            ytBtnContinue.style.background = '#10b981'; // Turn green
+            ytBtnContinue.style.borderColor = '#10b981';
+        }
+
+        function checkSub() {
+            // User clicked "I Subscribed"
+            localStorage.setItem('trivia_sub_v1', 'true');
+            appState.hasSubscribed = true;
+            ytOverlay.classList.remove('active');
+            showToast("Welcome to Trivia Lab!", "fa-rocket");
+            triggerConfetti();
+            playSound('success');
+        }
 
         /* ================= START ================= */
         renderGrid();
