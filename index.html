@@ -7,7 +7,7 @@
     
     <!-- SOCIAL SHARE PREVIEW -->
     <meta property="og:title" content="Trivia Lab 🧠">
-    <meta property="og:description" content="100+ Fascinating Facts explained in depth. Learn something new today!">
+    <meta property="og:description" content="100+ Fascinating Facts explained. Level up your knowledge!">
     <meta property="og:image" content="https://ui-avatars.com/api/?name=🧠&background=6366f1&color=fff&size=512&font-size=0.5">
     <meta property="og:url" content="https://solomon19.github.io/trivia.html">
     <meta property="og:type" content="website">
@@ -22,7 +22,6 @@
 
     <style>
         :root {
-            /* SEASONAL "AURORA" PALETTE */
             --primary: #818cf8;    /* Indigo */
             --secondary: #2dd4bf;  /* Teal */
             --accent: #fbbf24;     /* Gold */
@@ -45,6 +44,7 @@
             min-height: 100vh;
             padding-bottom: env(safe-area-inset-bottom);
             overflow-x: hidden;
+            user-select: none;
         }
 
         /* --- Animated "Aurora" Background --- */
@@ -59,10 +59,8 @@
             background-color: #0f172a;
         }
         
-        /* Floating particles overlay */
         .ambient-bg::after {
-            content: "";
-            position: absolute; inset: 0;
+            content: ""; position: absolute; inset: 0;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
@@ -73,10 +71,7 @@
         }
 
         /* --- Toast Notification --- */
-        .toast-container {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 2000; width: 90%; max-width: 400px; pointer-events: none;
-        }
+        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; width: 90%; max-width: 400px; pointer-events: none; }
         .toast {
             background: rgba(255, 255, 255, 0.95); color: #0f172a;
             padding: 12px 24px; border-radius: 50px; margin-bottom: 10px;
@@ -97,23 +92,23 @@
             padding: 15px 24px; padding-top: max(15px, env(safe-area-inset-top));
             display: flex; justify-content: space-between; align-items: center;
         }
-        .brand {
-            font-size: 1.2rem; font-weight: 800; color: white;
-            display: flex; align-items: center; gap: 12px;
-            letter-spacing: 0.5px;
+        .xp-container { display: flex; flex-direction: column; align-items: flex-start; }
+        .level-badge {
+            font-size: 0.75rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 5px;
         }
-        .logo-placeholder {
-            width: 36px; height: 36px; border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem; color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-            transform: rotate(-5deg);
+        .xp-bar-bg {
+            width: 100px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 4px; overflow: hidden;
         }
-        .progress-pill {
+        .xp-bar-fill {
+            height: 100%; background: linear-gradient(90deg, var(--secondary), var(--primary)); width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--primary);
+        }
+        .stats-pill {
             background: rgba(255,255,255,0.05); padding: 6px 14px;
             border-radius: 30px; font-size: 0.85rem; font-weight: 600;
             border: 1px solid var(--glass-border); color: var(--secondary);
+            display: flex; align-items: center; gap: 6px;
         }
 
         /* --- Controls --- */
@@ -154,6 +149,16 @@
         }
         @keyframes cardEntrance { to { opacity: 1; transform: translateY(0); } }
         .card:active { transform: scale(0.9) !important; }
+        
+        /* Rarity */
+        .card.rare { border-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); }
+        .card.epic { border-color: #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+        .card.legendary { 
+            border-color: #f59e0b; background: rgba(245, 158, 11, 0.15);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); animation: pulseGold 2s infinite;
+        }
+        @keyframes pulseGold { 0% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); } 50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.7); } 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); } }
+
         .card.highlight {
             background: white; color: var(--primary);
             box-shadow: 0 0 30px var(--primary);
@@ -161,8 +166,16 @@
         }
         .card.used {
             background: rgba(0,0,0,0.3); border-color: transparent;
-            color: rgba(255,255,255,0.15); box-shadow: none;
+            color: rgba(255,255,255,0.15); box-shadow: none; animation: none;
         }
+
+        /* --- Floating XP --- */
+        .floating-xp {
+            position: fixed; font-weight: 900; font-size: 1.5rem; color: var(--accent);
+            pointer-events: none; z-index: 3000; text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            animation: floatUp 1.5s ease-out forwards;
+        }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
 
         /* --- Button Group --- */
         .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
@@ -171,31 +184,12 @@
             font-weight: 600; cursor: pointer; display: flex; align-items: center;
             justify-content: center; gap: 8px; transition: all 0.3s; text-decoration: none;
         }
-        .btn-reset {
-            background: rgba(255, 255, 255, 0.05); color: var(--text-muted);
-            border: 1px solid var(--glass-border);
-        }
-        .btn-reset.confirming {
-            background: #ef4444; color: white; border-color: #ef4444;
-            animation: shake 0.4s ease-in-out;
-        }
-        
-        .btn-bottom-spin {
-            background: rgba(255, 255, 255, 0.08); color: white;
-            border: 1px solid rgba(255,255,255,0.1);
-            width: 100%; margin-bottom: 20px;
-        }
+        .btn-reset { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid var(--glass-border); }
+        .btn-reset.confirming { background: #ef4444; color: white; border-color: #ef4444; animation: shake 0.4s ease-in-out; }
+        .btn-bottom-spin { background: rgba(255, 255, 255, 0.08); color: white; border: 1px solid rgba(255,255,255,0.1); width: 100%; margin-bottom: 20px; }
         .btn-bottom-spin:hover { background: rgba(255,255,255,0.15); }
-
-        .btn-support {
-            background: rgba(251, 191, 36, 0.1); color: #fbbf24;
-            border: 1px solid rgba(251, 191, 36, 0.3);
-        }
-        .btn-support:hover {
-            background: #fbbf24; color: black;
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-        }
-        
+        .btn-support { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+        .btn-support:hover { background: #fbbf24; color: black; box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
         /* --- Payment Modal --- */
@@ -211,11 +205,10 @@
         .pay-label { display: block; font-weight: 700; color: white; font-size: 1rem; }
         .pay-sub { display: block; font-size: 0.8rem; color: var(--text-muted); }
 
-        /* --- Question & Answer Modal --- */
+        /* --- Question Modal --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            z-index: 100; opacity: 0; visibility: hidden;
+            backdrop-filter: blur(16px); z-index: 100; opacity: 0; visibility: hidden;
             transition: opacity 0.3s; display: flex; align-items: flex-end; justify-content: center;
         }
         @media(min-width: 600px) { .modal-overlay { align-items: center; } }
@@ -229,7 +222,6 @@
             transform: translateY(110%); transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             box-shadow: 0 -10px 50px rgba(0,0,0,0.5); z-index: 101;
         }
-        @media(min-width: 600px) { .sheet { border-radius: 30px; } }
         .modal-overlay.active .sheet { transform: translateY(0); }
 
         .category-badge {
@@ -238,52 +230,36 @@
             padding: 8px 16px; border-radius: 10px; margin-bottom: 20px; letter-spacing: 1px;
             border: 1px solid rgba(99, 102, 241, 0.3);
         }
-        
-        /* Premium Typography for Questions */
         .q-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem; line-height: 1.4; font-weight: 600;
-            color: white; margin-bottom: 25px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-family: 'Playfair Display', serif; font-size: 1.6rem; line-height: 1.4; font-weight: 600;
+            color: white; margin-bottom: 25px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* Answer Reveal Section */
-        .answer-container {
-            margin-bottom: 30px; position: relative; min-height: 60px;
-        }
-        
-        /* Glassmorphism Answer Box */
+        .answer-container { margin-bottom: 30px; position: relative; min-height: 60px; }
         .answer-box {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            border-radius: 16px; padding: 20px;
-            color: #d1fae5; font-family: 'Playfair Display', serif;
-            font-weight: 500; font-size: 1.1rem; line-height: 1.6;
-            display: none; box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
-            animation: fadeIn 0.6s ease;
+            background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 16px; padding: 20px; color: #d1fae5; font-family: 'Playfair Display', serif;
+            font-weight: 500; font-size: 1.1rem; line-height: 1.6; display: none;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1); animation: fadeIn 0.6s ease;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
         .btn-reveal {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.3);
             color: var(--text-muted); width: 100%; padding: 20px; border-radius: 16px;
             cursor: pointer; font-weight: 600; font-family: 'Outfit', sans-serif;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s;
         }
         .btn-reveal:hover { background: rgba(255, 255, 255, 0.1); color: white; border-color: white; }
 
-        .modal-actions { display: grid; grid-template-columns: 1fr 3fr; gap: 12px; display: none; /* Hidden until reveal */ }
+        .modal-actions { display: grid; grid-template-columns: 1fr 3fr; gap: 12px; display: none; }
         .modal-actions.visible { display: grid; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .btn-share {
-            background: rgba(255,255,255,0.1); color: white;
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 18px;
-            font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 18px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
-        
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #0f172a; border: none; padding: 18px; border-radius: 18px;
@@ -297,7 +273,6 @@
             background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
             transform: skewX(-20deg); animation: shine 3s infinite;
         }
-
         .btn-close-text {
             background: transparent; border: none; color: var(--text-muted);
             margin-top: 20px; width: 100%; padding: 10px; font-size: 0.95rem; cursor: pointer;
@@ -324,12 +299,14 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <header class="app-header">
-        <div class="brand">
-            <div class="logo-placeholder"><i class="fa-solid fa-lightbulb"></i></div>
-            <span>Trivia Lab</span>
+        <div class="xp-container">
+            <div class="level-badge">
+                <i class="fa-solid fa-crown"></i> <span id="rankTitle">Novice</span>
+            </div>
+            <div class="xp-bar-bg"><div id="xpBar" class="xp-bar-fill"></div></div>
         </div>
-        <div class="progress-pill">
-            <span id="progressText">0/105</span>
+        <div class="stats-pill">
+            <i class="fa-solid fa-bolt"></i> <span id="progressText">0/105</span>
         </div>
     </header>
 
@@ -342,7 +319,6 @@
     <div class="container">
         <div class="grid" id="grid"></div>
         
-        <!-- Additional Spin Button -->
         <button class="btn-bottom-spin" onclick="triggerSpin()">
             <i class="fa-solid fa-dice"></i> Spin Another
         </button>
@@ -357,7 +333,7 @@
         </div>
         
         <p style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.7rem; margin-top: 30px;">
-            Trivia Lab v2.0 Platinum
+            Trivia Lab v3.1 Fixed
         </p>
     </div>
 
@@ -371,23 +347,19 @@
                     <div class="q-text" id="mText">...</div>
                 </div>
                 
-                <!-- Answer Section -->
                 <div class="answer-container">
                     <button id="revealBtn" class="btn-reveal" onclick="revealAnswer()">
-                        <i class="fa-solid fa-eye"></i> Tap to Reveal Answer
+                        <i class="fa-solid fa-eye"></i> Reveal Answer
                     </button>
-                    <div id="answerBox" class="answer-box">
-                        <!-- Answer inserted here -->
-                    </div>
+                    <div id="answerBox" class="answer-box"></div>
                 </div>
 
-                <!-- Actions (Hidden until reveal) -->
                 <div id="modalActions" class="modal-actions">
                     <button class="btn-share" onclick="shareQuestion()">
                         <i class="fa-solid fa-share-nodes"></i>
                     </button>
                     <button class="btn-primary" onclick="handleDone(true)">
-                        <i class="fa-solid fa-check"></i> Done & Spin Next <i class="fa-solid fa-arrows-rotate" style="font-size: 0.9em; margin-left: 5px;"></i>
+                        <i class="fa-solid fa-check"></i> Claim XP & Spin
                     </button>
                 </div>
                 
@@ -398,7 +370,7 @@
             <div id="victoryContent" class="victory-modal">
                 <div class="victory-icon">🎓</div>
                 <div class="q-text">Knowledge Master!</div>
-                <p style="color: rgba(255,255,255,0.7); margin-bottom: 30px; line-height: 1.6;">You have completed all 105 facts. Your brain is now officially heavier.</p>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 30px; line-height: 1.6;">You have completed all 105 facts.</p>
                 <button class="btn-primary" onclick="resetGameForce()">
                     <i class="fa-solid fa-rotate-right"></i> Restart Journey
                 </button>
@@ -411,7 +383,7 @@
         <div class="sheet">
             <div style="text-align: center; margin-bottom: 25px;">
                 <h2 style="color:white; margin:0 0 10px 0; font-family: 'Playfair Display', serif;">Support the App 🧠</h2>
-                <p style="color:var(--text-muted); font-size:0.95rem; margin:0;">Creating educational content takes time. If you learned something new, a coffee would be amazing!</p>
+                <p style="color:var(--text-muted); font-size:0.95rem; margin:0;">If you learned something new, consider supporting!</p>
             </div>
 
             <div class="pay-option" onclick="copyTelebirr('0912294220')">
@@ -439,7 +411,6 @@
     </div>
 
     <script>
-        /* ================= AUDIO ENGINE ================= */
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -467,12 +438,7 @@
             }
         }
 
-        /* ================= DATABASE (105 EDU QUESTIONS) ================= */
-        const categoryColors = { 
-            "Nature": "#10b981", "History": "#f59e0b", "Science": "#3b82f6", 
-            "Space": "#8b5cf6", "Human": "#ec4899", "World": "#0ea5e9", "Fun": "#fbbf24", "Money": "#10b981"
-        };
-
+        const categoryColors = { "Nature": "#10b981", "History": "#f59e0b", "Science": "#3b82f6", "Space": "#8b5cf6", "Human": "#ec4899", "World": "#0ea5e9", "Fun": "#fbbf24", "Money": "#10b981" };
         const db = [
             { id: 1, cat: "Nature", q: "ማር (Honey) ለምን አይበላሽም?", a: "ማር ባክቴሪያዎች እንዳይራቡ የሚያደርግ ተፈጥሮአዊ ባህሪ (Low moisture & Acidic pH) ስላለው፣ እርጥበት እና አየር እስካልገባበት ድረስ ለዘመናት አይበላሽም።" },
             { id: 2, cat: "Human", q: "አብዛኛው ሰው በህይወት ዘመኑ በአማካይ ስንት ጊዜ አለምን በእግሩ ይዞራል?", a: "አንድ ሰው በአማካይ በህይወት ዘመኑ 110,000 ማይል ይራመዳል። ይህም አለምን በኢኳቶር (Equator) ዙሪያ 3 ጊዜ እንደመዞር ይቆጠራል።" },
@@ -581,10 +547,45 @@
             { id: 105, cat: "Science", q: "የሰው ልጅ DNA ከ ሙዝ ጋር ምን ያህል ይመሳሰላል?", a: "ወደ 50% ገደማ። ይህ የሚያሳየው ህይወት ያላቸው ነገሮች ሁሉ የጋራ መነሻ እንዳላቸው ነው።" }
         ];
 
-        /* ================= STATE ================= */
-        const appState = { usedIds: JSON.parse(localStorage.getItem('trivia_used_v1')) || [], currentId: null, isSpinning: false, total: db.length };
+        /* ================= STATE & LEVELING ================= */
+        const appState = {
+            usedIds: JSON.parse(localStorage.getItem('trivia_used_v2')) || [],
+            xp: parseInt(localStorage.getItem('trivia_xp_v2')) || 0,
+            currentId: null,
+            isSpinning: false,
+            total: db.length
+        };
 
-        /* ================= HELPERS ================= */
+        const ranks = [
+            { threshold: 0, title: "Novice" },
+            { threshold: 500, title: "Learner" },
+            { threshold: 1500, title: "Scholar" },
+            { threshold: 3000, title: "Master" },
+            { threshold: 5000, title: "Sage" },
+            { threshold: 7500, title: "Genius" },
+            { threshold: 10000, title: "Time Lord" }
+        ];
+
+        /* ================= HELPER FUNCTIONS ================= */
+        function getRank(xp) {
+            return ranks.slice().reverse().find(r => xp >= r.threshold).title;
+        }
+
+        function calculateLevelProgress() {
+            const nextRank = ranks.find(r => r.threshold > appState.xp);
+            if (!nextRank) return 100;
+            const prevRank = ranks.slice().reverse().find(r => r.threshold <= appState.xp);
+            const range = nextRank.threshold - prevRank.threshold;
+            const progress = appState.xp - prevRank.threshold;
+            return (progress / range) * 100;
+        }
+
+        function updateStats() {
+            document.getElementById("rankTitle").textContent = getRank(appState.xp);
+            document.getElementById("progressText").textContent = `${appState.usedIds.length}/${appState.total}`;
+            document.getElementById("xpBar").style.width = `${calculateLevelProgress()}%`;
+        }
+
         function showToast(msg, icon="fa-info-circle") {
             const c = document.getElementById('toastContainer');
             const t = document.createElement('div');
@@ -594,6 +595,18 @@
             requestAnimationFrame(()=>t.classList.add('show'));
             setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),300); },3000);
         }
+
+        function showFloatingXP(amount) {
+            const el = document.createElement('div');
+            el.className = 'floating-xp';
+            el.textContent = `+${amount} XP`;
+            el.style.left = '50%';
+            el.style.top = '50%';
+            el.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1500);
+        }
+
         function haptic(type="light") { if(navigator.vibrate) navigator.vibrate({light:10,medium:25,heavy:[30,40,30]}[type]); }
 
         /* ================= RENDER ================= */
@@ -603,29 +616,38 @@
             gridEl.innerHTML = "";
             db.forEach((item, index) => {
                 const el = document.createElement("div");
-                el.className = "card " + (appState.usedIds.includes(item.id) ? "used" : "");
+                let rarityClass = "";
+                
+                // Rarity Logic
+                if (item.id % 25 === 0) rarityClass = "legendary";
+                else if (item.id % 10 === 0) rarityClass = "epic";
+                else if (item.id % 5 === 0) rarityClass = "rare";
+
+                el.className = `card ${rarityClass} ${appState.usedIds.includes(item.id) ? "used" : ""}`;
                 el.textContent = item.id;
-                el.style.animationDelay = `${index*15}ms`;
+                el.style.animationDelay = `${index*10}ms`;
                 el.onclick = () => { if(!appState.isSpinning) openModal(item.id); };
                 frag.appendChild(el);
             });
             gridEl.appendChild(frag);
-            updateProgress();
+            updateStats();
         }
 
         /* ================= GAMEPLAY ================= */
         function triggerSpin() {
             const available = db.filter(d => !appState.usedIds.includes(d.id));
-            if(available.length === 0) return checkCompletion();
+            if(available.length === 0) return showToast("All questions answered!", "fa-trophy");
             appState.isSpinning = true;
-            
             document.getElementById("spinBtn").classList.add("spinning");
             
             let counter = 0, speed = 20, lastHighlight = null;
             const step = () => {
                 if(lastHighlight) gridEl.children[lastHighlight.id-1].classList.remove("highlight");
+                
+                // Bias towards rare cards occasionally? No, pure random for fairness.
                 const randomItem = available[Math.floor(Math.random() * available.length)];
                 const el = gridEl.children[randomItem.id-1];
+                
                 el.classList.add("highlight");
                 el.scrollIntoView({behavior:"smooth",block:"center"});
                 lastHighlight = randomItem;
@@ -659,11 +681,16 @@
             document.getElementById("modalActions").classList.remove("visible");
 
             document.getElementById("mCategory").textContent = data.cat;
-            // Fallback color if category not found
-            const catColor = categoryColors[data.cat] || "#6366f1";
-            document.getElementById("mCategory").style.color = catColor;
-            document.getElementById("mCategory").style.background = catColor+"30";
-            document.getElementById("mCategory").style.borderColor = catColor+"50";
+            // Fallback color logic
+            const catColor = ({ 
+                "Nature": "#10b981", "History": "#f59e0b", "Science": "#3b82f6", 
+                "Space": "#8b5cf6", "Human": "#ec4899", "World": "#0ea5e9"
+            })[data.cat] || "#6366f1";
+            
+            const catBadge = document.getElementById("mCategory");
+            catBadge.style.color = catColor;
+            catBadge.style.background = catColor+"30";
+            catBadge.style.borderColor = catColor+"50";
 
             document.getElementById("mNumber").textContent = "QUESTION " + id;
             document.getElementById("mText").textContent = data.q;
@@ -673,50 +700,40 @@
             haptic("light"); playSound('pop');
         }
 
-        /* ================= REVEAL LOGIC ================= */
         function revealAnswer() {
             document.getElementById("revealBtn").style.display = "none";
             document.getElementById("answerBox").style.display = "block";
             document.getElementById("modalActions").classList.add("visible");
-            haptic("medium");
-            playSound('pop');
+            haptic("medium"); playSound('pop');
         }
 
         function closeModal(id) { document.getElementById(id).classList.remove("active"); }
         overlay.onclick = (e) => { if(e.target === overlay) closeModal('overlay'); };
         document.getElementById("donationOverlay").onclick = (e) => { if(e.target === document.getElementById("donationOverlay")) closeModal('donationOverlay'); };
 
-        /* ================= FEATURES ================= */
-        function shareQuestion() {
-            const data = db.find(x => x.id === appState.currentId);
-            const text = `🧠 Trivia Lab Question #${data.id}\n\n❓ ${data.q}\n💡 Answer: ${data.a}`;
-            if(navigator.share) navigator.share({title:'Trivia Lab',text:text}).catch(()=>copyToClipboard(text));
-            else copyToClipboard(text);
-        }
-        function copyToClipboard(text) { 
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                showToast("Copied to clipboard!", "fa-copy");
-                haptic("medium");
-            } catch (err) { console.error('Fallback copy failed', err); }
-            document.body.removeChild(textArea);
-        }
-
+        /* ================= COMPLETION ================= */
         function handleDone(spinNext = false) {
             const id = appState.currentId;
             if(id && !appState.usedIds.includes(id)) {
+                // XP Calculation
+                let xpGain = 50; // Base
+                if (id % 5 === 0) xpGain = 75; // Rare
+                if (id % 10 === 0) xpGain = 100; // Epic
+                if (id % 25 === 0) xpGain = 200; // Legendary
+
                 appState.usedIds.push(id);
-                localStorage.setItem("trivia_used_v1", JSON.stringify(appState.usedIds));
+                appState.xp += xpGain;
+                
+                localStorage.setItem("trivia_used_v2", JSON.stringify(appState.usedIds));
+                localStorage.setItem("trivia_xp_v2", appState.xp);
+                
+                showFloatingXP(xpGain);
                 renderGrid(); triggerConfetti(); playSound('success');
+                
                 if(appState.usedIds.length === appState.total) setTimeout(()=>showVictory(), 500);
             }
             closeModal('overlay');
-            if(spinNext) setTimeout(() => { triggerSpin(); }, 600);
+            if(spinNext) setTimeout(() => { triggerSpin(); }, 800); // Slight delay for XP animation
         }
 
         function showVictory() {
@@ -736,13 +753,21 @@
         }
         function triggerMegaConfetti(){ triggerConfetti(120); }
 
-        function updateProgress() { document.getElementById("progressText").textContent = `${appState.usedIds.length}/${appState.total}`; }
-
-        function checkCompletion() {
-             showToast("All questions completed! Reset to play again.", "fa-trophy");
+        /* ================= SYSTEM ================= */
+        function shareQuestion() {
+            const data = db.find(x => x.id === appState.currentId);
+            const text = `🧠 Trivia Lab Question #${data.id}\n\n❓ ${data.q}\n💡 Answer: ${data.a}`;
+            if(navigator.share) navigator.share({title:'Trivia Lab',text:text}).catch(()=>copyToClipboard(text));
+            else copyToClipboard(text);
+        }
+        function copyToClipboard(text) { 
+            const textArea = document.createElement("textarea"); textArea.value = text;
+            document.body.appendChild(textArea); textArea.focus(); textArea.select();
+            try { document.execCommand('copy'); showToast("Copied!", "fa-copy"); haptic("medium"); } 
+            catch (err) { console.error(err); }
+            document.body.removeChild(textArea);
         }
 
-        /* ================= RESET & SUPPORT ================= */
         const resetBtn = document.getElementById("resetBtn");
         let resetTimeout;
         resetBtn.onclick = () => {
@@ -759,21 +784,17 @@
         };
 
         function resetGameForce() {
-            appState.usedIds = []; localStorage.removeItem("trivia_used_v1"); renderGrid();
+            appState.usedIds = []; appState.xp = 0;
+            localStorage.removeItem("trivia_used_v2");
+            localStorage.removeItem("trivia_xp_v2");
+            renderGrid();
             resetBtn.classList.remove("confirming");
             resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Reset';
-            showToast("Game Reset!", "fa-trash-can"); haptic("heavy"); closeModal('overlay');
+            showToast("Progress Reset!", "fa-trash-can"); haptic("heavy"); closeModal('overlay');
         }
 
-        function openDonationModal() {
-            document.getElementById("donationOverlay").classList.add("active");
-            playSound('pop');
-        }
-
-        function copyTelebirr(num) {
-            copyToClipboard(num);
-            showToast("Telebirr number copied!", "fa-check");
-        }
+        function openDonationModal() { document.getElementById("donationOverlay").classList.add("active"); playSound('pop'); }
+        function copyTelebirr(num) { copyToClipboard(num); showToast("Number Copied!", "fa-check"); }
 
         /* ================= START ================= */
         renderGrid();
