@@ -361,12 +361,20 @@
             margin-bottom: 20px;
             text-align: center;
             animation: borderPulse 3s infinite;
+            /* Scrollable list styling */
+            max-height: 250px;
+            overflow-y: auto;
+            /* Custom scrollbar for webkit browsers */
+            &::-webkit-scrollbar { width: 6px; }
+            &::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.3); border-radius: 10px; }
+            &::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
         }
         @keyframes borderPulse { 0% { border-color: rgba(245, 158, 11, 0.4); } 50% { border-color: rgba(245, 158, 11, 0.9); } 100% { border-color: rgba(245, 158, 11, 0.4); } }
         
         .giveaway-title {
             color: var(--accent); font-weight: 900; font-size: 1.2rem; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;
             display: flex; align-items: center; justify-content: center; gap: 8px; text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+            position: sticky; top: 0; background: #0f172a; padding: 5px 0; z-index: 10; /* Sticky header within scroll */
         }
         
         .giveaway-list {
@@ -427,7 +435,7 @@
 
     <div class="controls-area">
         <button class="btn-spin" id="spinBtn" onclick="triggerSpin()">
-            <i class="fa-solid fa-arrows-rotate"></i> Spin Random
+            <i class="fa-solid fa-arrows-rotate"></i> አሽከርክር (Spin)
         </button>
     </div>
 
@@ -435,15 +443,15 @@
         <div class="grid" id="grid"></div>
         
         <button class="btn-bottom-spin" onclick="triggerSpin()">
-            <i class="fa-solid fa-dice"></i> Spin Another
+            <i class="fa-solid fa-dice"></i> ሌላ አሽከርክር
         </button>
 
         <div class="button-group">
             <button id="resetBtn" class="btn-reset">
-                <i class="fa-solid fa-rotate-right"></i> Reset
+                <i class="fa-solid fa-rotate-right"></i> ከአዲስ ጀምር
             </button>
             <button class="btn-support" onclick="openDonationModal()">
-                <i class="fa-solid fa-hand-holding-heart"></i> Support
+                <i class="fa-solid fa-hand-holding-heart"></i> ድጋፍ (Support)
             </button>
         </div>
         
@@ -464,7 +472,7 @@
                 
                 <div class="answer-container">
                     <button id="revealBtn" class="btn-reveal" onclick="revealAnswer()">
-                        <i class="fa-solid fa-eye"></i> Reveal Answer
+                        <i class="fa-solid fa-eye"></i> መልሱን አሳይ
                     </button>
                     <div id="answerBox" class="answer-box"></div>
                 </div>
@@ -474,20 +482,20 @@
                         <i class="fa-solid fa-share-nodes"></i>
                     </button>
                     <button class="btn-primary" onclick="handleDone(true)">
-                        <i class="fa-solid fa-check"></i> Claim XP & Spin
+                        <i class="fa-solid fa-check"></i> ጨርሻለሁ (ቀጣይ)
                     </button>
                 </div>
                 
-                <button class="btn-close-text" onclick="closeModal('overlay')">Close</button>
+                <button class="btn-close-text" onclick="closeModal('overlay')">ዝጋ (Close)</button>
             </div>
 
             <!-- Victory Content -->
             <div id="victoryContent" class="victory-modal">
                 <div class="victory-icon">🎓</div>
                 <div class="q-text">Knowledge Master!</div>
-                <p style="color: rgba(255,255,255,0.7); margin-bottom: 30px; line-height: 1.6;">You have completed all 105 facts.</p>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 30px; line-height: 1.6;">ሁሉንም 105 ጥያቄዎች ጨርሰሃል!</p>
                 <button class="btn-primary" onclick="resetGameForce()">
-                    <i class="fa-solid fa-rotate-right"></i> Restart Journey
+                    <i class="fa-solid fa-rotate-right"></i> እንደገና ጀምር
                 </button>
             </div>
         </div>
@@ -499,7 +507,7 @@
             <!-- Back Arrow Row (Hidden by default) -->
             <div id="ytCloseRow">
                 <button id="ytCloseBtn" onclick="closeYtModal()">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Game
+                    <i class="fa-solid fa-arrow-left"></i> ወደ ጨዋታው ተመለስ
                 </button>
             </div>
 
@@ -509,7 +517,7 @@
                 
                 <!-- GIVEAWAY SECTION -->
                 <div class="giveaway-card">
-                    <div class="giveaway-title"><i class="fa-solid fa-trophy"></i> Subscriber Giveaway</div>
+                    <div class="giveaway-title"><i class="fa-solid fa-trophy"></i> የሽልማት መረጃ</div>
                     
                     <div class="giveaway-list">
                         <div class="giveaway-item"><span>50th Subscriber</span> <span class="giveaway-amt">300 Birr</span></div>
@@ -521,28 +529,28 @@
                     </div>
                     
                     <button class="btn-claim" onclick="openClaimContact()">
-                        <i class="fa-brands fa-telegram"></i> Claim Prize (Send Screenshot)
+                        <i class="fa-brands fa-telegram"></i> ሽልማቱን ውሰድ (Send Screenshot)
                     </button>
                     
                     <div class="giveaway-note">
-                        *If you are one of these numbers, take a screenshot of your subscription and send it to me!
+                        *ከነዚህ ቁጥሮች አንዱ ከሆንክ፣ ሰብስክራይብ ያደረግክበትን screenshot ላክ!
                     </div>
                 </div>
 
                 <div id="newSubscriberContent">
                     <p style="color:var(--text-muted); margin-bottom: 25px; line-height: 1.5; font-size: 0.9rem;">
-                        This premium app is free to use. <br>Please <b>Subscribe</b> to my channel to unlock it.
+                        ይህ አፕ በነጻ የቀረበ ነው! ለመጀመር እባክዎ ቻናሉን <b>Subscribe</b> ያድርጉ።
                     </p>
                     
                     <!-- LINKED TO SOLO PODCAST -->
                     <a href="https://www.youtube.com/channel/UCuflrha5RH0t7T0KFtRXHtg?sub_confirmation=1" target="_blank" onclick="handleSubClick()" style="text-decoration:none;">
                         <button class="btn-yt">
-                            <i class="fa-brands fa-youtube"></i> Subscribe Now
+                            <i class="fa-brands fa-youtube"></i> Youtube ሰብስክራይብ
                         </button>
                     </a>
                     
                     <button id="btnYtContinue" class="btn-yt-check" onclick="checkSub()" style="opacity: 0.5; pointer-events: none;">
-                        I Subscribed
+                        ሰብስክራይብ አድርጌያለሁ
                     </button>
                 </div>
             </div>
@@ -554,14 +562,14 @@
         <div class="sheet">
             <div style="text-align: center; margin-bottom: 25px;">
                 <h2 style="color:white; margin:0 0 10px 0; font-family: 'Playfair Display', serif;">Support the App 🧠</h2>
-                <p style="color:var(--text-muted); font-size:0.95rem; margin:0;">If you learned something new, consider supporting!</p>
+                <p style="color:var(--text-muted); font-size:0.95rem; margin:0;">አዲስ ነገር ከተማሩ፣ ድጋፍዎን ያሳዩን!</p>
             </div>
 
             <div class="pay-option" onclick="copyTelebirr('0912294220')">
                 <div class="pay-icon" style="color: #2D9CDB"><i class="fa-solid fa-mobile-screen-button"></i></div>
                 <div class="pay-text">
                     <span class="pay-label">Telebirr</span>
-                    <span class="pay-sub">0912294220 (Tap to Copy)</span>
+                    <span class="pay-sub">0912294220 (ይቅዱ)</span>
                 </div>
                 <i class="fa-solid fa-copy" style="color: var(--text-muted)"></i>
             </div>
@@ -577,7 +585,7 @@
                 </div>
             </a>
             
-            <button class="btn-close-text" onclick="closeModal('donationOverlay')">Close</button>
+            <button class="btn-close-text" onclick="closeModal('donationOverlay')">ዝጋ (Close)</button>
         </div>
     </div>
 
@@ -946,11 +954,11 @@
             if(resetBtn.classList.contains("confirming")) resetGameForce();
             else {
                 resetBtn.classList.add("confirming");
-                resetBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Confirm';
+                resetBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> ማረጋገጫ (Confirm)';
                 clearTimeout(resetTimeout);
                 resetTimeout = setTimeout(() => {
                     resetBtn.classList.remove("confirming");
-                    resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Reset';
+                    resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> ከአዲስ ጀምር';
                 }, 3000);
             }
         };
@@ -961,7 +969,7 @@
             localStorage.removeItem("trivia_xp_v2");
             renderGrid();
             resetBtn.classList.remove("confirming");
-            resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Reset';
+            resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> ከአዲስ ጀምር';
             showToast("Progress Reset!", "fa-trash-can"); haptic("heavy"); closeModal('overlay');
         }
 
@@ -984,7 +992,7 @@
             
             // 2. Start "Verification" Timer
             const originalText = ytBtnContinue.innerText;
-            ytBtnContinue.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+            ytBtnContinue.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ማረጋገጥ ላይ (Verifying)...';
             
             // GA4 Custom Event
             if(typeof gtag !== 'undefined') {
@@ -997,7 +1005,7 @@
             // 3. Wait 15 seconds (Simulate checking API)
             setTimeout(() => {
                 ytBtnContinue.classList.add('ready');
-                ytBtnContinue.innerHTML = '<i class="fa-solid fa-check"></i> Confirm Subscription';
+                ytBtnContinue.innerHTML = '<i class="fa-solid fa-check"></i> አረጋግጥ (Confirm Subscription)';
                 ytBtnContinue.style.pointerEvents = 'auto'; // Enable clicking
                 ytBtnContinue.onclick = checkSub; // Attach function
             }, 15000); // 15 seconds delay
