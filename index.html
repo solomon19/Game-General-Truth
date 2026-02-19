@@ -539,7 +539,7 @@
 
                 <div id="newSubscriberContent">
                     <p style="color:var(--text-muted); margin-bottom: 25px; line-height: 1.5; font-size: 0.9rem;">
-                        ይህ አፕ በነጻ የቀረበ ነው! ለመጀመር እባክዎ ቻናሉን <b>Subscribe</b> ያድርጉ።
+                         የመጀመሪያዎቹን 10 ጥያቄዎች በነጻ ይሞክሩ! ሙሉውን 105 ጥያቄዎች ለመክፈት ግን <b>Subscribe</b> ማድረግ አለብዎት።
                     </p>
                     
                     <!-- LINKED TO SOLO PODCAST -->
@@ -806,7 +806,8 @@
                 el.className = `card ${rarityClass} ${appState.usedIds.includes(item.id) ? "used" : ""}`;
                 el.textContent = item.id;
                 el.style.animationDelay = `${index*10}ms`;
-                el.onclick = () => { if(!appState.isSpinning) openModal(item.id); };
+                // MODIFIED CLICK HANDLER FOR 10-QUESTION GATE
+                el.onclick = () => { if(!appState.isSpinning) checkGate(item.id); };
                 frag.appendChild(el);
             });
             gridEl.appendChild(frag);
@@ -817,6 +818,13 @@
         function triggerSpin() {
             const available = db.filter(d => !appState.usedIds.includes(d.id));
             if(available.length === 0) return showToast("All questions answered!", "fa-trophy");
+
+            // GATE CHECK
+            if (!appState.hasSubscribed && appState.usedIds.length >= 10) {
+                 reopenWelcomeModal();
+                 return;
+            }
+
             appState.isSpinning = true;
             document.getElementById("spinBtn").classList.add("spinning");
             
@@ -844,6 +852,15 @@
                 }
             };
             step();
+        }
+
+        // GATE CHECK FUNCTION
+        function checkGate(id) {
+             if (!appState.hasSubscribed && appState.usedIds.length >= 10) {
+                 reopenWelcomeModal();
+                 return;
+             }
+             openModal(id);
         }
 
         const overlay = document.getElementById("overlay");
@@ -913,7 +930,15 @@
                 if(appState.usedIds.length === appState.total) setTimeout(()=>showVictory(), 500);
             }
             closeModal('overlay');
-            if(spinNext) setTimeout(() => { triggerSpin(); }, 800); // Slight delay for XP animation
+            
+            // Check for gate before auto-spinning
+            if(spinNext) {
+                if (!appState.hasSubscribed && appState.usedIds.length >= 10) {
+                     setTimeout(() => reopenWelcomeModal(), 600);
+                     return;
+                }
+                setTimeout(() => { triggerSpin(); }, 800); 
+            }
         }
 
         function showVictory() {
@@ -954,11 +979,11 @@
             if(resetBtn.classList.contains("confirming")) resetGameForce();
             else {
                 resetBtn.classList.add("confirming");
-                resetBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> ማረጋገጫ (Confirm)';
+                resetBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Confirm';
                 clearTimeout(resetTimeout);
                 resetTimeout = setTimeout(() => {
                     resetBtn.classList.remove("confirming");
-                    resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> ከአዲስ ጀምር';
+                    resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Reset';
                 }, 3000);
             }
         };
@@ -967,9 +992,13 @@
             appState.usedIds = []; appState.xp = 0;
             localStorage.removeItem("trivia_used_v2");
             localStorage.removeItem("trivia_xp_v2");
+            // Also reset subscription state to test flow again (optional, good for debugging)
+            // localStorage.removeItem("trivia_sub_v1"); 
+            // appState.hasSubscribed = false;
+            
             renderGrid();
             resetBtn.classList.remove("confirming");
-            resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> ከአዲስ ጀምር';
+            resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Reset';
             showToast("Progress Reset!", "fa-trash-can"); haptic("heavy"); closeModal('overlay');
         }
 
@@ -981,11 +1010,8 @@
         const ytOverlay = document.getElementById('ytGateOverlay');
         const ytBtnContinue = document.getElementById('btnYtContinue');
 
-        // Check subscription status on load
-        if (!appState.hasSubscribed) {
-            // Show modal with a slight delay for effect
-            setTimeout(() => ytOverlay.classList.add('active'), 500);
-        }
+        // Removed the initial auto-show for Freemium model
+        // if (!appState.hasSubscribed) { ... }
 
         function handleSubClick() {
             // 1. Open YouTube
@@ -1035,8 +1061,14 @@
                 closeRow.style.display = 'block';
                 subContent.style.display = 'none';
             } else {
-                // New user
-                closeRow.style.display = 'none';
+                // New user / Not subscribed
+                if (appState.usedIds.length >= 10) {
+                     // Hit the limit -> Forced Gate -> No Close Button
+                     closeRow.style.display = 'none';
+                } else {
+                     // Viewing info before limit -> Allow Close
+                     closeRow.style.display = 'block';
+                }
                 subContent.style.display = 'block';
             }
             
